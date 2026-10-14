@@ -1,0 +1,176 @@
+<div class="panel-backdrop" *ngIf="isOpen" (click)="closePanel.emit()"></div>
+
+<div class="side-panel-drawer" [class.side-panel-drawer--open]="isOpen">
+  @if (resident; as r) {
+    <!-- Header: avatar · name + status · ID and role (same layout as the admin panel) -->
+    <div class="panel-header">
+      <div class="identity">
+        <div class="avatar">{{ initials(r) }}</div>
+        <div class="identity__text">
+          <div class="identity__line">
+            <h2 class="panel-title">{{ name(r) }}</h2>
+            <span class="status-pill status-pill--{{ r.status.toLowerCase() }}">
+              @if (r.status === 'Blocked') {
+                <mat-icon>block</mat-icon>
+              } @else {
+                <span class="status-pill__dot"></span>
+              }
+              {{ r.status }}
+            </span>
+          </div>
+          <div class="panel-subtitle">{{ r.residentId }} <span class="sep">·</span> Resident</div>
+        </div>
+      </div>
+      <button mat-icon-button type="button" class="close-btn" (click)="closePanel.emit()" aria-label="Close panel">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Account actions (above the tabs) -->
+    <div class="action-bar">
+      @for (action of actions(r.status); track action) {
+        <button type="button" class="btn-action btn-action--{{ actionStyle(action) }}" (click)="run(r, action)">
+          <mat-icon>{{ meta[action].icon }}</mat-icon>
+          <span>{{ action === 'unblock' ? 'Unblock Account' : meta[action].label }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" class="tab" [class.tab--active]="tab === 'details'" [attr.aria-selected]="tab === 'details'" (click)="setTab('details')">
+        <mat-icon fontSet="material-icons-outlined">person</mat-icon>
+        Details
+      </button>
+      <button type="button" role="tab" class="tab" [class.tab--active]="tab === 'activity'" [attr.aria-selected]="tab === 'activity'" (click)="setTab('activity')">
+        <mat-icon>monitor_heart</mat-icon>
+        Activity <span class="tab__count">{{ activity.length }}</span>
+      </button>
+    </div>
+
+    <div class="panel-body panel-body--cards" #panelBody>
+      <!-- ============ DETAILS ============ -->
+      @if (tab === 'details') {
+        @if (r.status === 'Blocked') {
+          <div class="alert alert--danger">
+            <mat-icon fontSet="material-icons-outlined">warning_amber</mat-icon>
+            <div>
+              <div class="alert__title">Account blocked{{ r.blockedAt ? ' on ' + (r.blockedAt | appDate: 'datetime') + '.' : '' }}</div>
+              <div>{{ r.blockReason || 'This resident cannot use the app until unblocked.' }}</div>
+            </div>
+          </div>
+        }
+        @if (r.status === 'Inactive' && r.checkOutDate) {
+          <div class="alert alert--neutral">
+            <mat-icon>logout</mat-icon>
+            <div>Checked out on {{ r.checkOutDate | appDate }}.</div>
+          </div>
+        }
+
+        <div class="info-cards">
+          <section class="info-card">
+            <span class="info-card__icon"><mat-icon fontSet="material-icons-outlined">person</mat-icon></span>
+            <div class="info-card__content">
+              <h3 class="info-card__title">Personal</h3>
+              <dl class="detail-grid detail-grid--single">
+                <div><dt>Resident ID</dt><dd>{{ r.residentId }}</dd></div>
+                <div><dt>Name</dt><dd>{{ name(r) }}</dd></div>
+                <div><dt>Gender</dt><dd>{{ r.gender }}</dd></div>
+                <div><dt>Email</dt><dd><a [href]="'mailto:' + r.email">{{ r.email }}</a></dd></div>
+                <div><dt>Mobile</dt><dd>{{ r.mobileCode }} {{ r.mobile }}</dd></div>
+              </dl>
+            </div>
+          </section>
+
+          <section class="info-card">
+            <span class="info-card__icon"><mat-icon fontSet="material-icons-outlined">shield</mat-icon></span>
+            <div class="info-card__content">
+              <h3 class="info-card__title">Account</h3>
+              <dl class="detail-grid">
+                <div><dt>Role</dt><dd>Resident</dd></div>
+                <div><dt>Last Login</dt><dd>{{ r.lastLogin ? (r.lastLogin | appDate: 'datetime') : 'Never' }}</dd></div>
+                <div>
+                  <dt>Status</dt>
+                  <dd><span class="status-pill status-pill--sm status-pill--{{ r.status.toLowerCase() }}">{{ r.status }}</span></dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+
+          <section class="info-card">
+            <span class="info-card__icon"><mat-icon fontSet="material-icons-outlined">apartment</mat-icon></span>
+            <div class="info-card__content">
+              <h3 class="info-card__title">Stay</h3>
+              <dl class="detail-grid">
+                <div><dt>Hostel ID</dt><dd>{{ r.hostelId }}</dd></div>
+                <div><dt>Hostel</dt><dd>{{ r.hostelName }}</dd></div>
+                <div><dt>Room / Bed</dt><dd>Room {{ r.roomNo }} · Bed {{ r.bedNo }}</dd></div>
+                <div><dt>Check-in Date</dt><dd>{{ r.checkInDate | appDate }}</dd></div>
+                <div><dt>Check-out Date</dt><dd>{{ r.checkOutDate ? (r.checkOutDate | appDate) : '—' }}</dd></div>
+              </dl>
+            </div>
+          </section>
+
+          <section class="info-card">
+            <span class="info-card__icon"><mat-icon fontSet="material-icons-outlined">family_restroom</mat-icon></span>
+            <div class="info-card__content">
+              <h3 class="info-card__title">Guardian</h3>
+              <dl class="detail-grid">
+                <div><dt>Name</dt><dd>{{ r.guardianName }}</dd></div>
+                <div><dt>Mobile</dt><dd>{{ r.mobileCode }} {{ r.guardianMobile }}</dd></div>
+              </dl>
+            </div>
+          </section>
+        </div>
+      }
+
+      <!-- ============ ACTIVITY ============ -->
+      @if (tab === 'activity') {
+        @if (activity.length === 0) {
+          <div class="activity-empty">
+            <mat-icon>history_toggle_off</mat-icon>
+            <div class="activity-empty__title">No activity recorded yet</div>
+            <div class="activity-empty__hint">Resident-app sign-ins and account changes will appear here.</div>
+          </div>
+        } @else {
+          <!-- Timeline: day label, then time · icon on the line · event card -->
+          <div class="timeline">
+            @for (day of activityDays; track day.label) {
+              <div class="timeline__day">{{ day.label }}</div>
+              <ol class="timeline__list">
+                @for (item of day.items; track $index) {
+                  <li class="timeline__item timeline__item--{{ item.tone }}">
+                    <time class="timeline__time" [attr.datetime]="item.timestamp">{{ item.timestamp | appDate: 'time' }}</time>
+                    <span class="timeline__dot"><mat-icon>{{ item.icon }}</mat-icon></span>
+                    <div class="timeline__card">
+                      <div class="timeline__title">{{ item.title }}</div>
+
+                      @if (item.kind === 'login' || item.kind === 'logout') {
+                        <div class="timeline__chips">
+                          <span class="chip"><mat-icon>{{ deviceIcon(item.device ?? '') }}</mat-icon>{{ item.device }}</span>
+                          <span class="chip"><span class="chip__label">IP:</span> {{ item.ip }}</span>
+                          @if (item.duration) {
+                            <span class="chip"><span class="chip__label">Session:</span> {{ item.duration }}</span>
+                          }
+                        </div>
+                      } @else {
+                        <div class="timeline__by">by <strong>{{ item.by }}</strong></div>
+                        @if (item.changes?.length) {
+                          <ul class="timeline__changes">
+                            @for (c of item.changes; track $index) {
+                              <li>{{ c }}</li>
+                            }
+                          </ul>
+                        }
+                      }
+                    </div>
+                  </li>
+                }
+              </ol>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

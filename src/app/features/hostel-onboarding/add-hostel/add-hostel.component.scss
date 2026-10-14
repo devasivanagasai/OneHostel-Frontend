@@ -1,0 +1,554 @@
+.wizard-page {
+  padding: 10px 0;
+}
+
+.wizard-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-margin-top: 16px;
+}
+
+// ---- Actions row -------------------------------------------------------------------
+.wizard-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.wizard-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: #0f172a;
+  }
+}
+
+// Back / Save Draft / Next
+.wizard-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+// ---- Stepper: numbered circles with the step name underneath ---------------------------
+.wizard-rail {
+  padding: 4px 0 0;
+}
+
+.wizard-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.wizard-steps__item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+
+  // Connector to the next step, drawn between the circles.
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: calc(50% + 22px);
+    right: calc(-50% + 22px);
+    height: 2px;
+    border-radius: 1px;
+    background: #e2e8f0;
+  }
+
+  // Done: the whole line is blue. Current: half of it, showing progress into this step.
+  &.is-done:not(:last-child)::after {
+    background: #2563eb;
+  }
+
+  &.is-current:not(:last-child)::after {
+    background: linear-gradient(90deg, #2563eb 0 50%, #e2e8f0 50% 100%);
+  }
+}
+
+.wizard-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+
+  &:hover .wizard-step__marker {
+    border-color: #93c5fd;
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    .wizard-step__marker {
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+    }
+  }
+}
+
+.wizard-step__marker {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #334155;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.wizard-step__label {
+  max-width: 100%;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wizard-step--current {
+  .wizard-step__marker {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .wizard-step__label {
+    color: #2563eb;
+    font-weight: 600;
+  }
+}
+
+.wizard-step--done {
+  .wizard-step__marker {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+
+  .wizard-step__label {
+    color: #0f172a;
+  }
+}
+
+.wizard-step--error {
+  .wizard-step__marker {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #dc2626;
+  }
+
+  .wizard-step__label {
+    color: #dc2626;
+  }
+}
+
+// ---- Card holding the current step -----------------------------------------------------
+.wizard-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 34, 74, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+// ---- Current step -------------------------------------------------------------------
+.wizard-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 24px 8px;
+}
+
+.wizard-main__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.wizard-main__titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.wizard-main__icon {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.wizard-main__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.wizard-main__hint {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.wizard-stepper {
+  flex: 1;
+  background: transparent;
+
+  ::ng-deep {
+    // Our own stepper above replaces Material's header (its labels were truncated).
+    .mat-horizontal-stepper-header-container {
+      display: none;
+    }
+
+    .mat-horizontal-content-container {
+      padding: 0;
+    }
+  }
+}
+
+// ---- Narrower screens ----------------------------------------------------------------
+@media (max-width: 1100px) {
+  // Names under every circle no longer fit: keep only the current one.
+  .wizard-steps__item:not(.is-current) .wizard-step__label {
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 640px) {
+  .wizard-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .wizard-step__label {
+    display: none;
+  }
+
+  .wizard-main {
+    padding: 18px 14px 6px;
+  }
+}
+
+// ---- Shared step fields: an even grid (3 / 2 / 1 columns) with one input size. ----
+::ng-deep {
+  .step-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px 20px !important;
+    margin-bottom: 20px !important;
+
+    @media (max-width: 1280px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    @media (max-width: 700px) {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  // Four fields per row (Hostel Information sections); two on medium screens, one on phones.
+  .step-grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+
+    @media (max-width: 1280px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    @media (max-width: 700px) {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  .step-grid__full {
+    grid-column: 1 / -1;
+  }
+
+  // Section cards inside a step (e.g. Basic Details, Contact, Branding).
+  .step-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 16px;
+  }
+
+  .step-section {
+    padding: 18px 18px 4px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 0 0 1px #eef2f7;
+
+    .step-grid {
+      margin-bottom: 12px !important;
+    }
+  }
+
+  .step-section__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 16px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #0f172a;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  // Plain label above a clean bordered box (no floating mat-label) — shared
+  // across every step so field markup only needs to add `.field-label`.
+  .field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .required-mark {
+    color: #ef4444;
+    margin-left: 2px;
+  }
+
+  .wizard-stepper .mat-mdc-text-field-wrapper {
+    height: 44px !important;
+    border-radius: 8px !important;
+    background-color: #ffffff !important;
+  }
+
+  .wizard-stepper .mat-mdc-form-field-flex {
+    height: 42px !important;
+    align-items: center !important;
+  }
+
+  .wizard-stepper .mat-mdc-form-field-infix {
+    padding: 6px 0 !important;
+    min-height: 0 !important;
+    border-top: none !important;
+  }
+
+  // One font for every field: Material inputs add 0.5px letter-spacing, and the
+  // plain inputs/selects (e.g. the mobile number) fall back to the browser's Arial.
+  .wizard-stepper .mat-mdc-input-element,
+  .wizard-stepper .mat-mdc-select-value,
+  .wizard-stepper input,
+  .wizard-stepper select,
+  .wizard-stepper textarea {
+    font-family: inherit !important;
+    font-size: 14px !important;
+    letter-spacing: normal !important;
+  }
+
+  .wizard-stepper .mat-mdc-input-element::placeholder,
+  .wizard-stepper .mat-mdc-select-placeholder {
+    color: #94a3b8 !important;
+  }
+
+  .wizard-stepper .mat-mdc-form-field-subscript-wrapper {
+    margin-top: 2px;
+  }
+
+  .wizard-stepper .mdc-notched-outline__leading,
+  .wizard-stepper .mdc-notched-outline__notch,
+  .wizard-stepper .mdc-notched-outline__trailing {
+    border-color: #dbe3ef !important;
+  }
+}
+
+.wizard-btn {
+  height: var(--btn-height);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: var(--btn-radius);
+  padding: 0 var(--btn-padding-x);
+  font-size: var(--btn-font-size);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &--primary {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.3);
+
+    &:hover:not([disabled]) {
+      background: #1d4ed8;
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.4);
+    }
+
+    &[disabled] {
+      background: #e2e8f0;
+      color: #94a3b8;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  }
+
+  &--secondary {
+    background: #f1f5f9;
+    color: #475569;
+
+    &:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+  }
+
+  &--stroked {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+
+    &:hover {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+  }
+
+  // Save Draft: white with a blue label and icon.
+  &--outline-blue {
+    background: #ffffff;
+    border: 1px solid #dbe3ef;
+    color: #2563eb;
+
+    &:hover {
+      border-color: #93c5fd;
+      background: #f8fbff;
+    }
+  }
+}
+
+// Same height for every action button.
+
+// Success state
+.wizard-success {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 34, 74, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  padding: 48px 32px;
+  text-align: center;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.wizard-success__icon {
+  color: #0d9488;
+  margin-bottom: 12px;
+
+  mat-icon {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.wizard-success__title {
+  margin: 0 0 24px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f224a;
+}
+
+.wizard-success__details {
+  text-align: left;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+}
+
+.wizard-success__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13.5px;
+
+  span {
+    color: #64748b;
+  }
+
+  strong {
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  & + & {
+    border-top: 1px solid #f1f5f9;
+  }
+}
+
+.wizard-success__status {
+  color: #0d9488 !important;
+}
+
+.wizard-success__actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}

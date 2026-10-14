@@ -1,0 +1,278 @@
+/* Table, badges, empty state and pagination: src/styles/_table.scss + _filters.scss */
+
+.users-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---- KPI tiles ---- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-tile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 34, 74, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.04);
+}
+
+.stat-tile--blue { --tone: #2563eb; --tone-bg: #e8f0ff; }
+.stat-tile--green { --tone: #16a34a; --tone-bg: #e7f8ee; }
+.stat-tile--purple { --tone: #7c3aed; --tone-bg: #f1ebff; }
+.stat-tile--amber { --tone: #ea580c; --tone-bg: #fff1e6; }
+
+.stat-tile__icon {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--tone-bg);
+  color: var(--tone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.stat-tile__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stat-tile__label {
+  font-size: 13px;
+  color: #475569;
+}
+
+.stat-tile__value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--tone);
+}
+
+/* Decorative trend line, bottom-right of the tile. */
+.stat-tile__spark {
+  flex: 1;
+  min-width: 48px;
+  max-width: 90px;
+  height: 28px;
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+.stat-tile__line {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.stat-tile__area {
+  fill: var(--tone);
+  opacity: 0.08;
+}
+
+/* ---- Toolbar ---- */
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .filter-field--search {
+    width: 380px;
+    max-width: 100%;
+  }
+}
+
+.list-toolbar__filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.never {
+  color: #94a3b8;
+}
+
+/* ---- One collapsible card per hostel ---- */
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.group-card {
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 34, 74, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  overflow: hidden;
+}
+
+.group-card__head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 22px;
+  border: none;
+  background: #ffffff;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: #fafcff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: -2px;
+  }
+}
+
+.group-card__toggle {
+  flex-shrink: 0;
+  color: #2563eb;
+}
+
+.group-card__icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #eef4ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.group-card__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.group-card__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-card__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.group-card__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2563eb;
+}
+
+.group-card__chevron {
+  flex-shrink: 0;
+  color: #475569;
+}
+
+.group-card__body {
+  padding: 0 16px 8px;
+  overflow-x: auto;
+}
+
+/* Header, cells and hover come from the shared .saas-table (_table.scss). */
+.group-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Role column: Admin in blue, Resident in grey. */
+.role-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.role-chip--admin {
+  background: #e8f0ff;
+  color: #2563eb;
+}
+
+/* Actions: Edit · Lock/Unlock · View, kept in fixed slots so columns line up. */
+.row-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  .row-edit-btn + .row-edit-btn {
+    margin-left: 0;
+  }
+}
+
+.row-icons__spacer {
+  display: inline-block;
+  width: var(--btn-height-sm);
+  height: var(--btn-height-sm);
+}
+
+.saas-table .row-edit-btn--purple {
+  color: #7c3aed;
+
+  &:hover:not(:disabled) {
+    border-color: #c4b5fd;
+    background: #f5f3ff;
+  }
+}
+
+@media (max-width: 720px) {
+  .group-card__meta {
+    display: none;
+  }
+}

@@ -1,0 +1,464 @@
+// Standard list-screen styles, shared by every table page
+// (Hostel Onboarding, Subscription Plans, Communication Templates,
+// Admin Management, Subscription & Payment, Audit Logs) — one look everywhere.
+//
+//   <div class="onboarding-page">
+//     <div class="saas-card">
+//       <div class="saas-card__header">…filters… <button class="primary-green-btn">New</button></div>
+//       <div class="table-responsive">
+//         <table mat-table class="saas-table">… <span class="status-badge status-badge--success"> …
+//           … <td class="actions-cell"><button class="row-action"><mat-icon>edit</mat-icon> Edit</button></td>
+//       </div>
+//       <app-empty-state …></app-empty-state>
+//       <app-pagination [pageSize]="pageSize" …></app-pagination>
+//     </div>
+//   </div>
+//
+// Screens keep only their genuinely unique styles locally. Component styles
+// are more specific than these, so a screen can still override any rule.
+// Card padding and status badges are scoped (to `.onboarding-page` and
+// `.saas-card`) so cards on Settings/Reports and badges in side panels or
+// dialogs keep their own styling.
+
+// ---- Page & card --------------------------------------------------------------
+.onboarding-page {
+  padding: 10px 0;
+}
+
+.onboarding-page .saas-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 34, 74, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  padding: 24px 28px 20px;
+}
+
+@media (max-width: 600px) {
+  .onboarding-page .saas-card {
+    padding: 18px 16px;
+  }
+}
+
+// Filters on the left; a primary action (e.g. "New") is pushed to the right.
+.saas-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  > .primary-green-btn {
+    margin-left: auto;
+  }
+}
+
+.primary-green-btn {
+  height: var(--btn-height);
+  background: #0057e7;
+  color: #ffffff;
+  border: none;
+  padding: 0 var(--btn-padding-x);
+  border-radius: var(--btn-radius);
+  font-size: var(--btn-font-size);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 87, 231, 0.25);
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: #0045b5;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(0, 87, 231, 0.35);
+  }
+}
+
+// ---- Table ----------------------------------------------------------------------
+.table-responsive {
+  overflow-x: auto;
+}
+
+.saas-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th.mat-mdc-header-cell,
+  th {
+    background-color: #e6f7f0;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td.mat-mdc-cell,
+  td {
+    color: #475569;
+    font-size: 13.5px;
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    white-space: nowrap;
+  }
+
+  .font-semibold {
+    font-weight: 700;
+    color: #0f224a;
+  }
+
+  .font-medium {
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .table-row {
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #f8fafc;
+    }
+  }
+
+  // Actions column hugs its buttons and sits on the right. Placed after the
+  // th/td rules with matching specificity so it wins over `text-align: left`.
+  th.actions-header,
+  td.actions-cell {
+    text-align: right;
+    width: 1%;
+    white-space: nowrap;
+  }
+
+  // Icon-only action (e.g. invoice / download): an outlined square.
+  .row-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--btn-height-sm);
+    height: var(--btn-height-sm);
+    // Browsers give <button> ~6px side padding by default, which clips the icon — so reset it.
+    padding: 0;
+    border: 1px solid #dbe3ef;
+    border-radius: var(--btn-radius);
+    background: #ffffff;
+    color: #2563eb;
+    cursor: pointer;
+    vertical-align: middle;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    mat-icon {
+      flex-shrink: 0;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    &:disabled {
+      color: #cbd5e1;
+      cursor: not-allowed;
+    }
+  }
+
+  .row-edit-btn + .row-edit-btn,
+  .row-action + .row-action {
+    margin-left: 6px;
+  }
+}
+
+// ---- Row action with a label ("✎ Edit", "👁 View") — the standard Actions button ----
+.row-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: var(--btn-height-sm);
+  padding: 0 var(--btn-padding-x-sm);
+  border: 1px solid #dbe3ef;
+  border-radius: var(--btn-radius);
+  background: #ffffff;
+  font: inherit;
+  font-size: var(--btn-font-size-sm);
+  font-weight: 600;
+  color: #2563eb;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}
+
+// ---- Cell helpers ---------------------------------------------------------------------
+// Avatar + name + sub-line:
+//   <div class="list-entity"><span class="list-entity__avatar list-avatar--blue">GS</span>
+//     <span class="list-entity__text"><span class="list-entity__name">…</span><span class="list-entity__sub">…</span></span></div>
+.list-entity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-entity__avatar {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.list-entity__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.list-entity__name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.list-entity__sub {
+  font-size: 12.5px;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+// Small coloured icon before a value ("📍 Hyderabad", "✉ Email").
+.with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #334155;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.list-avatar--blue { background: #dbeafe; color: #2563eb; }
+.list-avatar--purple { background: #ede9fe; color: #7c3aed; }
+.list-avatar--green { background: #dcfce7; color: #16a34a; }
+.list-avatar--amber { background: #fef3c7; color: #d97706; }
+.list-icon--blue { color: #3b82f6 !important; }
+.list-icon--purple { color: #8b5cf6 !important; }
+.list-icon--green { color: #22c55e !important; }
+.list-icon--amber { color: #f59e0b !important; }
+
+// ---- Status badges (inside list cards only): rounded tag with a dot ------------------
+.saas-card .status-badge,
+.saas-table .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+.saas-card,
+.saas-table {
+  .status-badge--success { background: #dcfce7; color: #16a34a; }
+  .status-badge--warning { background: #ffedd5; color: #ea580c; }
+  .status-badge--danger { background: #fee2e2; color: #dc2626; }
+  .status-badge--info { background: #e0f2fe; color: #0284c7; }
+  .status-badge--neutral { background: #f1f5f9; color: #64748b; }
+
+  // Older names still used by some screens.
+  .status-badge--active { background: #dcfce7; color: #16a34a; }
+  .status-badge--pending { background: #ffedd5; color: #ea580c; }
+  .status-badge--blocked { background: #fee2e2; color: #dc2626; }
+}
+
+// ---- Empty state (see app-empty-state) ---------------------------------------------
+.empty-state-wrapper {
+  width: 100%;
+}
+
+.empty-header-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.empty-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 40px 16px 32px;
+  text-align: center;
+}
+
+.empty-results__icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: #eff4ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.empty-results__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.empty-results__hint {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+// ---- Pagination: boxed arrows, blue current page, rows-per-page select ---------------
+.saas-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 16px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pagination-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.pag-arrows {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .pag-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &[disabled] {
+      cursor: not-allowed;
+    }
+
+    &:not([disabled]) {
+      color: #475569;
+
+      &:hover {
+        background: #f8fafc;
+        color: #0f172a;
+      }
+    }
+  }
+}
+
+.pag-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: #f1f5f9;
+  }
+}
+
+.pag-number--active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+.pag-size {
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 13px;
+  color: #334155;
+  cursor: pointer;
+}

@@ -1,0 +1,28 @@
+:host {
+  display: inline-block;
+}
+
+// Shared button size (tokens in styles.scss); screens may still override, e.g. the login CTA.
+:host ::ng-deep .mdc-button {
+  height: var(--btn-height);
+  padding: 0 var(--btn-padding-x);
+  font-size: var(--btn-font-size);
+  border-radius: var(--btn-radius);
+}
+
+.app-button__icon--left {
+  margin-right: 6px;
+}
+
+.app-button__icon--right {
+  margin-left: 6px;
+}
+
+.app-button__spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.app-button__spinner--left {
+  margin-right: 8px;
+}

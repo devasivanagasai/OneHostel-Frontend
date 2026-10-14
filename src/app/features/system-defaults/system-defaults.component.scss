@@ -1,0 +1,883 @@
+/* One page: a card per section; the single Submit sits in the General section header. */
+.settings-page {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.saas-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 34, 74, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+/* The single Submit, in the General section header (top of the page). */
+.settings-section__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+
+  .footer-status {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .settings-section__head {
+    flex-wrap: wrap;
+  }
+}
+
+/* Section cards */
+.settings-section {
+  scroll-margin-top: 16px;
+}
+
+.settings-section__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.settings-section__icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #e6f7f5;
+  color: #0d9488;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.settings-section__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-section__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.settings-section__desc {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.settings-section__badge {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+.settings-section__body {
+  padding: 20px 24px 8px;
+}
+
+.footer-status--error {
+  color: #dc2626;
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.footer-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #b45309;
+}
+
+/* Fields */
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 18px;
+}
+
+/* Three fields per row (General settings); drops to two, then one, on narrower screens. */
+.field-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .field-grid--3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Takes a whole grid row but keeps the normal half-width field size. */
+.field-group--own-row {
+  grid-column: 1 / -1;
+  max-width: calc(50% - 9px);
+}
+
+/* Own row at full width (e.g. the Password Format checkboxes, which need room for 4 in a line). */
+.field-group--full {
+  max-width: none;
+}
+
+@media (max-width: 700px) {
+  .field-group--own-row {
+    max-width: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-bottom: 10px;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.required-star {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.field-hint {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: -14px;
+  margin-bottom: 4px;
+}
+
+.field-hint--warn {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.field-error {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+.full-width {
+  width: 100%;
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background-color: #ffffff !important;
+      border-radius: 8px !important;
+      padding: 0 14px !important;
+      height: 44px !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 44px !important;
+      align-items: center !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding: 6px 0 !important;
+      min-height: 0 !important;
+      border-top: none !important;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      margin-top: 2px;
+      min-height: 18px;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #cbd5e1 !important;
+      border-width: 1px !important;
+    }
+
+    .mat-mdc-select-value,
+    input.mat-mdc-input-element {
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.unit {
+  font-size: 12.5px;
+  color: #64748b;
+  padding-left: 6px;
+}
+
+.option-sub {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.reveal-btn {
+  width: 32px !important;
+  height: 32px !important;
+  padding: 4px !important;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #64748b;
+  }
+}
+
+/* Mobile: country code + number inside one outlined field (matches Admin → Mobile) */
+.mobile-field ::ng-deep {
+  .mat-mdc-form-field-icon-prefix {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    padding: 0 !important;
+  }
+
+  .mat-mdc-form-field-infix {
+    flex: 1;
+  }
+
+  input.mat-mdc-input-element {
+    line-height: 20px;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Read-only fields (Support Email / Mobile): grey, dashed, locked. */
+.readonly-field {
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background-color: #f8fafc !important;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-style: dashed !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    input.mat-mdc-input-element {
+      color: #334155 !important;
+      font-weight: 500;
+      cursor: default;
+    }
+  }
+
+  .readonly-lock {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+  }
+}
+
+/* Dialling code shown as text before the read-only number, with a divider. */
+.cc-readonly {
+  display: inline-block;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right: 1px solid #cbd5e1;
+  font-weight: 600;
+  color: #334155;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sub-sections */
+.sub-section {
+  padding: 4px 0 8px;
+
+  & + & {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 18px;
+  }
+}
+
+.sub-section__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+
+  mat-icon {
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+    color: #0d9488;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+}
+
+.head-toggle {
+  margin-left: auto;
+  font-size: 13px;
+}
+
+.muted-note {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.mode-toggle {
+  height: 44px;
+  align-self: flex-start;
+  border-radius: 8px !important;
+  margin-bottom: 22px;
+
+  ::ng-deep .mat-button-toggle-label-content {
+    line-height: 42px !important;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 0 18px !important;
+  }
+
+  ::ng-deep .mat-button-toggle-checked {
+    background: #e6f7f5;
+    color: #0d9488;
+  }
+}
+
+.mode-toggle + .field-hint {
+  margin-top: -16px;
+}
+
+/* Radio choices (Login Method, Plan Prices, Fee Type): same height as a field so rows line up. */
+.radio-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  min-height: 44px;
+  margin: 0 0 22px -10px; /* -10px offsets the radio's built-in touch padding so it aligns with labels */
+
+  ::ng-deep {
+    .mdc-form-field > label {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #1e293b;
+      padding-left: 2px;
+    }
+
+    .mat-mdc-radio-checked .mdc-form-field > label {
+      color: #0f766e;
+    }
+
+    .mat-mdc-radio-button {
+      --mdc-radio-selected-icon-color: #0d9488;
+      --mdc-radio-selected-focus-icon-color: #0d9488;
+      --mdc-radio-selected-hover-icon-color: #0d9488;
+      --mdc-radio-selected-pressed-icon-color: #0d9488;
+      --mat-radio-checked-ripple-color: #0d9488;
+    }
+  }
+}
+
+.radio-row + .field-hint {
+  margin-top: -18px;
+}
+
+/* All Settings toggles: green when on. */
+:host ::ng-deep .mat-mdc-slide-toggle {
+  --mdc-switch-selected-handle-color: #ffffff;
+  --mdc-switch-selected-hover-handle-color: #ffffff;
+  --mdc-switch-selected-focus-handle-color: #ffffff;
+  --mdc-switch-selected-pressed-handle-color: #ffffff;
+  --mdc-switch-selected-track-color: #16a34a;
+  --mdc-switch-selected-hover-track-color: #15803d;
+  --mdc-switch-selected-focus-track-color: #15803d;
+  --mdc-switch-selected-pressed-track-color: #15803d;
+  --mdc-switch-selected-icon-color: #16a34a;
+  --mdc-switch-selected-focus-state-layer-color: #16a34a;
+  --mdc-switch-selected-hover-state-layer-color: #16a34a;
+  --mdc-switch-selected-pressed-state-layer-color: #16a34a;
+
+  /* The theme sets these tokens with equal specificity, so also paint the "on" track
+     and handle directly — guarantees green whatever the stylesheet order. */
+  .mdc-switch.mdc-switch--selected:enabled .mdc-switch__track::after {
+    background: #16a34a !important;
+  }
+
+  .mdc-switch.mdc-switch--selected:enabled:hover .mdc-switch__track::after {
+    background: #15803d !important;
+  }
+
+  .mdc-switch.mdc-switch--selected:enabled .mdc-switch__handle::after {
+    background: #ffffff !important;
+  }
+}
+
+.preview-box {
+  max-width: 360px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  color: #475569;
+}
+
+.preview-box__title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+}
+
+.preview-box__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.preview-box__row--total {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 4px;
+  padding-top: 7px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--btn-height);
+  padding: 0 var(--btn-padding-x);
+  border-radius: var(--btn-radius);
+  font-size: var(--btn-font-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}
+
+.btn-primary {
+  background: #0057e7;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 87, 231, 0.25);
+
+  &:hover:not(:disabled) {
+    background: #0045b5;
+  }
+}
+
+.btn-secondary {
+  height: var(--btn-height);
+  padding: 0 var(--btn-padding-x);
+  font-size: var(--btn-font-size);
+  border-radius: var(--btn-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+
+  &:hover:not(:disabled) {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+}
+
+.btn-sm {
+  border-radius: var(--btn-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--btn-height-sm);
+  padding: 0 var(--btn-padding-x-sm);
+  font-size: var(--btn-font-size-sm);
+}
+
+.btn-text-danger {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+
+  &:hover {
+    background: #fef2f2;
+  }
+}
+
+/* ============================ Security ============================ */
+/* Settings groups on the left, a live summary pinned on the right. */
+.security-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .security-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.security-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.policy-card {
+  padding: 18px 20px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+
+  .field-grid {
+    margin-bottom: 0;
+  }
+}
+
+.policy-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.policy-card__icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.policy-card__icon--blue { background: #eff6ff; color: #2563eb; }
+.policy-card__icon--purple { background: #f5f3ff; color: #7c3aed; }
+.policy-card__icon--amber { background: #fffbeb; color: #d97706; }
+
+.policy-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.policy-card__desc {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+/* Password format: toggle tiles, two per row. */
+.format-rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 4px 0 0;
+}
+
+/* .field-hint normally pulls up under an input field; after the tiles it needs a real gap instead. */
+.format-rules + .field-hint {
+  margin-top: 10px;
+}
+
+@media (max-width: 560px) {
+  .format-rules {
+    grid-template-columns: 1fr;
+  }
+}
+
+.format-rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px 12px 12px; // extra right padding keeps the switch clear of the border
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  mat-slide-toggle {
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Label on the left, switch pushed to the right edge of the tile.
+  ::ng-deep .mdc-form-field {
+    width: 100%;
+
+    > label {
+      flex: 1;
+      text-align: left;
+      padding: 0 8px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #334155;
+    }
+  }
+}
+
+.format-rule--on {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.format-rule__sample {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.format-rule--on .format-rule__sample {
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+/* Summary column */
+/* Summary column: scrolls with the page (not sticky). */
+.security-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.strength {
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--strength-color) 7%, #ffffff) 0%, #ffffff 70%);
+  --strength-color: #0d9488;
+}
+
+.strength--moderate {
+  --strength-color: #d97706;
+}
+
+.strength--weak {
+  --strength-color: #e11d48;
+}
+
+.strength__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+
+  > mat-icon {
+    color: var(--strength-color);
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.strength__title {
+  display: flex;
+  flex-direction: column;
+}
+
+.strength__caption {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.strength__label {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--strength-color);
+}
+
+.strength__score {
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #334155;
+  font-variant-numeric: tabular-nums;
+}
+
+.strength__meter {
+  display: grid;
+  gap: 3px;
+}
+
+.strength__seg {
+  height: 6px;
+  border-radius: 3px;
+  background: #e2e8f0;
+}
+
+.strength__seg--on {
+  background: var(--strength-color);
+}
+
+.strength__tips {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li {
+    display: flex;
+    gap: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #475569;
+  }
+
+  mat-icon {
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #d97706;
+  }
+}
+
+.strength__ok {
+  margin: 12px 0 0;
+  font-size: 12.5px;
+  color: #475569;
+}
+
+.policy-summary {
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.policy-summary__title {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.policy-summary__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  li {
+    display: flex;
+    gap: 10px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #475569;
+  }
+
+  strong {
+    color: #0f172a;
+  }
+
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+    color: #0d9488;
+  }
+}

@@ -1,0 +1,188 @@
+<div class="onboarding-page users-page">
+  <!-- Summary KPIs (display only) -->
+  <div class="stats">
+    @for (tile of tiles; track tile.label) {
+      <div class="stat-tile stat-tile--{{ tile.tone }}">
+        <span class="stat-tile__icon"><mat-icon fontSet="material-icons-outlined">{{ tile.icon }}</mat-icon></span>
+        <span class="stat-tile__text">
+          <span class="stat-tile__label">{{ tile.label }}</span>
+          <span class="stat-tile__value">{{ tile.count }}</span>
+        </span>
+        <svg class="stat-tile__spark" viewBox="0 0 80 28" preserveAspectRatio="none" aria-hidden="true">
+          <path class="stat-tile__area" d="M0 24 C14 24 20 22 30 20 S44 8 52 10 S66 20 80 18 L80 28 L0 28 Z" />
+          <path class="stat-tile__line" d="M0 24 C14 24 20 22 30 20 S44 8 52 10 S66 20 80 18" />
+        </svg>
+      </div>
+    }
+  </div>
+
+  <!-- Toolbar: search left, filters right -->
+  <div class="list-toolbar">
+    <mat-form-field appearance="outline" class="filter-field filter-field--search">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput type="text" placeholder="Search ID, name, username, room" [(ngModel)]="search" />
+      @if (search) {
+        <button mat-icon-button matSuffix type="button" class="filter-clear-btn" aria-label="Clear search" (click)="search = ''">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <div class="list-toolbar__filters">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-select [(ngModel)]="hostelFilter" aria-label="Filter by hostel">
+          <mat-option value="All">All Hostels</mat-option>
+          @for (h of hostelOptions; track h) {
+            <mat-option [value]="h">{{ h }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-select [(ngModel)]="roleFilter" aria-label="Filter by role">
+          <mat-option value="All">All Roles</mat-option>
+          @for (r of roles; track r) {
+            <mat-option [value]="r">{{ r }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-select [(ngModel)]="statusFilter" aria-label="Filter by status">
+          <mat-option value="All">All Statuses</mat-option>
+          @for (s of statusOptions; track s) {
+            <mat-option [value]="s">{{ s }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (hasFilters) {
+        <button type="button" class="filter-reset" (click)="resetFilters()">
+          <mat-icon>restart_alt</mat-icon> Reset
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- One card per onboarded hostel: its Admins and Residents together -->
+  @if (groups.length) {
+    <div class="groups">
+      @for (g of groups; track g.hostel) {
+        <section class="group-card" [class.group-card--open]="!isCollapsed(g.hostel)">
+          <button type="button" class="group-card__head" [attr.aria-expanded]="!isCollapsed(g.hostel)" (click)="toggleGroup(g.hostel)">
+            <mat-icon class="group-card__toggle">{{ isCollapsed(g.hostel) ? 'chevron_right' : 'expand_less' }}</mat-icon>
+            <span class="group-card__icon"><mat-icon fontSet="material-icons-outlined">apartment</mat-icon></span>
+            <span class="group-card__text">
+              <span class="group-card__title">{{ g.hostel }}</span>
+              <span class="group-card__meta">
+                {{ g.admins }} {{ g.admins === 1 ? 'Admin' : 'Admins' }}
+                <span class="group-card__dot" aria-hidden="true"></span>
+                {{ g.residents }} {{ g.residents === 1 ? 'Resident' : 'Residents' }}
+                <span class="group-card__dot" aria-hidden="true"></span>
+                {{ g.total }} {{ g.total === 1 ? 'record' : 'records' }}
+              </span>
+            </span>
+            <mat-icon class="group-card__chevron">{{ isCollapsed(g.hostel) ? 'expand_more' : 'expand_less' }}</mat-icon>
+          </button>
+
+          @if (!isCollapsed(g.hostel)) {
+            <div class="group-card__body">
+              <table class="saas-table group-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Room / Bed</th>
+                    <th>Last Login</th>
+                    <th>Status</th>
+                    <th class="actions-header">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (u of g.rows; track u.id) {
+                    <tr class="table-row">
+                      <td class="font-semibold">{{ u.id }}</td>
+                      <td class="font-medium">{{ u.name }}</td>
+                      <td>
+                        <span class="role-chip" [class.role-chip--admin]="u.role === 'Admin'">{{ u.role }}</span>
+                      </td>
+                      <td>
+                        @if (u.roomBed) {
+                          {{ u.roomBed }}
+                        } @else {
+                          <span class="never">—</span>
+                        }
+                      </td>
+                      <td>
+                        @if (u.lastLogin) {
+                          {{ u.lastLogin | appDate: 'datetime' }}
+                        } @else {
+                          <span class="never">Never</span>
+                        }
+                      </td>
+                      <td><span class="status-badge status-badge--{{ u.tone }}">{{ u.status }}</span></td>
+                      <td class="actions-cell">
+                        <span class="row-icons">
+                          @if (u.role === 'Admin') {
+                            <button type="button" class="row-edit-btn" matTooltip="Edit" [attr.aria-label]="'Edit ' + u.name" (click)="edit(u)">
+                              <mat-icon>edit</mat-icon>
+                            </button>
+                          } @else {
+                            <span class="row-icons__spacer" aria-hidden="true"></span>
+                          }
+
+                          @if (lockAction(u); as lock) {
+                            <button
+                              type="button"
+                              class="row-edit-btn row-edit-btn--purple"
+                              [matTooltip]="lock.label"
+                              [attr.aria-label]="lock.label + ' ' + u.name"
+                              (click)="toggleLock(u)"
+                            >
+                              <mat-icon>{{ lock.icon }}</mat-icon>
+                            </button>
+                          } @else {
+                            <span class="row-icons__spacer" aria-hidden="true"></span>
+                          }
+
+                          <button type="button" class="row-edit-btn" matTooltip="View" [attr.aria-label]="'View ' + u.name" (click)="view(u)">
+                            <mat-icon>visibility</mat-icon>
+                          </button>
+                        </span>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+      }
+    </div>
+  } @else {
+    <div class="saas-card">
+      <app-empty-state
+        [icon]="hasFilters ? 'search_off' : 'group'"
+        [message]="hasFilters ? 'No users match your filters' : 'No users yet'"
+        [hint]="hasFilters ? 'Try a different search, hostel, role or status, or clear the filters.' : 'Admins and residents of onboarded hostels appear here.'"
+        [clearable]="hasFilters"
+        (clear)="resetFilters()"
+      ></app-empty-state>
+    </div>
+  }
+</div>
+
+<app-admin-detail-panel
+  [isOpen]="adminPanelOpen"
+  [adminId]="selectedAdminId"
+  [initialTab]="adminPanelTab"
+  [showEdit]="true"
+  (closePanel)="adminPanelOpen = false"
+></app-admin-detail-panel>
+
+<app-resident-detail-panel
+  [isOpen]="residentPanelOpen"
+  [residentId]="selectedResidentId"
+  (closePanel)="residentPanelOpen = false"
+></app-resident-detail-panel>

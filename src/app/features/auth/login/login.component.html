@@ -1,0 +1,525 @@
+<div class="login-page">
+  <div class="login-shell">
+    <!-- ===== Right: sign-in form (first in DOM; placed right via CSS order) ===== -->
+    <section class="login-panel">
+      <header class="login-panel__logo">
+        <mat-icon class="login-panel__logo-mark">apps</mat-icon>
+        <span class="login-panel__logo-text">ONEHOSTEL</span>
+      </header>
+
+      <div class="login-card" [class.login-card--shake]="loginFailed">
+        <div class="login-card__header">
+          <h1 class="login-card__title">Welcome Back</h1>
+          <p class="login-card__subtitle">
+            @if (method === 'Password') {
+              Enter your login ID and password to access your account.
+            } @else {
+              We'll send a one-time code to your registered mobile number or email.
+            }
+          </p>
+        </div>
+
+        @if (signedOutForInactivity) {
+          <p class="login-notice" role="status">
+            <mat-icon fontSet="material-icons-outlined">schedule</mat-icon>
+            You were signed out because you were inactive. Please log in again.
+          </p>
+        }
+
+        <!-- Login method switch -->
+        <div class="login-method" role="tablist" aria-label="Login method">
+          <button
+            type="button"
+            role="tab"
+            class="login-method__tab"
+            [class.login-method__tab--active]="method === 'Password'"
+            [attr.aria-selected]="method === 'Password'"
+            (click)="setMethod('Password')"
+          >
+            Password
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="login-method__tab"
+            [class.login-method__tab--active]="method === 'OTP'"
+            [attr.aria-selected]="method === 'OTP'"
+            (click)="setMethod('OTP')"
+          >
+            OTP
+          </button>
+        </div>
+
+        @if (method === 'Password') {
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form" novalidate>
+            <ng-container [ngTemplateOutlet]="loginIdField"></ng-container>
+
+            <!-- Password -->
+            <div class="login-form__field">
+              <!-- Label and "Forgot Password?" share one line -->
+              <div class="login-form__label-row">
+                <label class="login-form__label" for="login-password">Password</label>
+                <a href="#" class="login-form__forgot" (click)="onForgotPassword($event)">Forgot Password?</a>
+              </div>
+              <mat-form-field appearance="outline" class="full-width custom-outline-field">
+                <input
+                  #passwordInput
+                  id="login-password"
+                  matInput
+                  [type]="hidePassword ? 'password' : 'text'"
+                  placeholder="Enter your password"
+                  formControlName="password"
+                  autocomplete="current-password"
+                  required
+                  (keyup)="onPasswordKeyEvent($event)"
+                  (keydown)="onPasswordKeyEvent($event)"
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="togglePasswordVisibility()"
+                  [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+                  [attr.aria-pressed]="!hidePassword"
+                  class="eye-icon-button"
+                  [class.eye-icon-button--active]="!hidePassword"
+                >
+                  <mat-icon fontSet="material-icons-outlined" class="eye-icon">{{ hidePassword ? 'visibility' : 'visibility_off' }}</mat-icon>
+                </button>
+              </mat-form-field>
+              @if (capsLockOn) {
+                <p class="login-form__caps-warning" role="alert">
+                  <mat-icon>info</mat-icon>
+                  Caps Lock is on
+                </p>
+              }
+              <app-form-error [control]="form.get('password')" label="Password"></app-form-error>
+            </div>
+
+            <app-button
+              variant="primary"
+              type="submit"
+              [loading]="loading"
+              class="login-form__submit-btn"
+            >
+              Login
+            </app-button>
+
+            <div class="login-form__divider" role="separator"><span>or</span></div>
+
+            <button type="button" class="login-form__demo" (click)="fillDemoCredentials()">
+              <mat-icon fontSet="material-icons-outlined">rocket_launch</mat-icon>
+              Use demo credentials
+            </button>
+          </form>
+        } @else if (!otpChallenge) {
+          <!-- OTP step 1: who are you? -->
+          <form [formGroup]="form" (ngSubmit)="onSendOtp()" class="login-form" novalidate>
+            <ng-container [ngTemplateOutlet]="loginIdField"></ng-container>
+
+            <app-button
+              variant="primary"
+              type="submit"
+              [disabled]="loginIdControl.invalid"
+              [loading]="loading"
+              class="login-form__submit-btn login-form__submit-btn--spaced"
+            >
+              Send OTP
+            </app-button>
+          </form>
+        } @else {
+          <!-- OTP step 2: enter the code -->
+          <form (ngSubmit)="onVerifyOtp()" class="login-form" novalidate>
+            <p class="otp-sent">
+              Enter the {{ otpChallenge.length }}-digit code sent to <strong>{{ otpChallenge.sentTo }}</strong>
+              <button type="button" class="otp-sent__change" (click)="resetOtp()">Change</button>
+            </p>
+
+            <div class="login-form__field">
+              <label class="login-form__label" for="login-otp">One-time code</label>
+              <mat-form-field appearance="outline" class="full-width custom-outline-field otp-field">
+                <input
+                  #otpInput
+                  id="login-otp"
+                  matInput
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  [attr.maxlength]="otpChallenge.length"
+                  [placeholder]="'•'.repeat(otpChallenge.length)"
+                  [formControl]="otpCode"
+                  (input)="onOtpInput()"
+                />
+              </mat-form-field>
+              <app-form-error [control]="otpCode" label="OTP"></app-form-error>
+            </div>
+
+            @if (otpChallenge.demoCode) {
+              <p class="otp-demo" role="note">
+                <mat-icon fontSet="material-icons-outlined">info</mat-icon>
+                Demo mode — no SMS is sent. Your code is <strong>{{ otpChallenge.demoCode }}</strong>
+              </p>
+            }
+
+            <div class="login-form__row">
+              @if (resendIn > 0) {
+                <span class="otp-resend otp-resend--wait">Resend OTP in {{ resendIn }}s</span>
+              } @else {
+                <button type="button" class="otp-resend" [disabled]="loading" (click)="onSendOtp()">Resend OTP</button>
+              }
+            </div>
+
+            <app-button
+              variant="primary"
+              type="submit"
+              [disabled]="otpCode.invalid"
+              [loading]="loading"
+              class="login-form__submit-btn"
+            >
+              Verify &amp; Login
+            </app-button>
+          </form>
+        }
+
+        <p class="login-card__secure">
+          <mat-icon>check_circle</mat-icon>
+          Your connection is encrypted and secure.
+        </p>
+      </div>
+
+      <footer class="login-panel__footer">
+        Powered by RV
+      </footer>
+    </section>
+
+    <!-- ===== Left: brand panel (decorative) ===== -->
+    <section class="login-brand" aria-hidden="true">
+      <div class="login-brand__intro">
+        <h2 class="login-brand__tagline">Run every hostel, from one place.</h2>
+        <p class="login-brand__subtitle">
+          Manage hostels, residents, and subscriptions from a single centralized dashboard.
+        </p>
+      </div>
+
+      <!-- Illustration: a hostel with live-looking dashboard cards floating around it -->
+      <div class="brand-scene">
+        <svg class="brand-scene__building" viewBox="0 0 460 360" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bGlass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a3a86" /><stop offset="0.6" stop-color="#1a2560" /><stop offset="1" stop-color="#0f163f" /></linearGradient>
+            <linearGradient id="bSide" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0a1033" /><stop offset="1" stop-color="#151f55" /></linearGradient>
+            <linearGradient id="bWarm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe3a6" /><stop offset="1" stop-color="#f0a24c" /></linearGradient>
+            <linearGradient id="bDim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f3f86" /><stop offset="1" stop-color="#1b2459" /></linearGradient>
+            <radialGradient id="bGlow" cx="0.35" cy="0.75" r="0.6"><stop offset="0" stop-color="#8b5cf6" stop-opacity="0.35" /><stop offset="1" stop-color="#8b5cf6" stop-opacity="0" /></radialGradient>
+            <radialGradient id="bPlaza" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fbbf24" stop-opacity="0.35" /><stop offset="1" stop-color="#fbbf24" stop-opacity="0" /></radialGradient>
+          </defs>
+          <ellipse cx="190" cy="344" rx="190" ry="14" fill="url(#bPlaza)" />
+          <polygon points="12,40 46,18 46,336 12,330" fill="url(#bSide)" />
+          <polygon points="18,68.2 40,48.5 40,60.5 18,80.2" fill="url(#bWarm)" opacity="0.57" />
+          <polygon points="18,92.3 40,75.0 40,87.0 18,104.3" fill="url(#bWarm)" opacity="0.45" />
+          <polygon points="18,116.5 40,101.5 40,113.5 18,128.5" fill="url(#bWarm)" opacity="0.55" />
+          <polygon points="18,140.7 40,128.0 40,140.0 18,152.7" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="18,189.0 40,181.0 40,193.0 18,201.0" fill="url(#bWarm)" opacity="0.46" />
+          <polygon points="18,261.5 40,260.5 40,272.5 18,273.5" fill="url(#bWarm)" opacity="0.55" />
+          <polygon points="18,285.7 40,287.0 40,299.0 18,297.7" fill="url(#bWarm)" opacity="0.62" />
+          <polygon points="18,309.8 40,313.5 40,325.5 18,321.8" fill="url(#bWarm)" opacity="0.57" />
+          <polygon points="46,18 446,108 446,306 46,336" fill="url(#bGlass)" />
+          <polygon points="50.4,23.2 78.4,29.4 78.4,46.9 50.4,41.2" fill="url(#bWarm)" opacity="0.59" />
+          <polygon points="86.5,31.2 109.3,36.2 109.3,53.2 86.5,48.5" fill="url(#bWarm)" opacity="0.97" />
+          <polygon points="116.2,37.8 137.5,42.5 137.5,58.9 116.2,54.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="144.0,43.9 164.2,48.4 164.2,64.4 144.0,60.3" fill="url(#bWarm)" opacity="0.72" />
+          <polygon points="170.5,49.8 190.0,54.1 190.0,69.6 170.5,65.7" fill="url(#bDim)" opacity="1" />
+          <polygon points="196.1,55.4 215.1,59.6 215.1,74.8 196.1,70.9" fill="url(#bWarm)" opacity="0.71" />
+          <polygon points="221.0,60.9 239.5,65.0 239.5,79.7 221.0,76.0" fill="url(#bWarm)" opacity="0.84" />
+          <polygon points="245.3,66.3 263.5,70.3 263.5,84.6 245.3,80.9" fill="url(#bWarm)" opacity="0.59" />
+          <polygon points="269.2,71.6 287.1,75.5 287.1,89.4 269.2,85.8" fill="url(#bDim)" opacity="1" />
+          <polygon points="292.6,76.7 310.2,80.6 310.2,94.2 292.6,90.6" fill="url(#bWarm)" opacity="0.62" />
+          <polygon points="315.7,81.9 333.1,85.7 333.1,98.8 315.7,95.3" fill="url(#bWarm)" opacity="0.67" />
+          <polygon points="338.5,86.9 355.6,90.7 355.6,103.4 338.5,99.9" fill="url(#bWarm)" opacity="0.89" />
+          <polygon points="361.0,91.9 377.9,95.6 377.9,108.0 361.0,104.5" fill="url(#bWarm)" opacity="0.68" />
+          <polygon points="383.2,96.8 400.0,100.5 400.0,112.5 383.2,109.1" fill="url(#bWarm)" opacity="0.96" />
+          <polygon points="405.2,101.6 421.8,105.3 421.8,116.9 405.2,113.5" fill="url(#bWarm)" opacity="0.94" />
+          <polygon points="427.0,106.4 443.4,110.1 443.4,121.3 427.0,118.0" fill="url(#bWarm)" opacity="0.62" />
+          <polygon points="50.4,49.6 78.4,55.1 78.4,72.6 50.4,67.6" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="86.5,56.7 109.3,61.1 109.3,78.1 86.5,74.0" fill="url(#bDim)" opacity="1" />
+          <polygon points="116.2,62.5 137.5,66.7 137.5,83.1 116.2,79.3" fill="url(#bDim)" opacity="1" />
+          <polygon points="144.0,67.9 164.2,71.9 164.2,87.9 144.0,84.3" fill="url(#bWarm)" opacity="0.61" />
+          <polygon points="170.5,73.1 190.0,77.0 190.0,92.5 170.5,89.0" fill="url(#bWarm)" opacity="0.55" />
+          <polygon points="196.1,78.2 215.1,81.9 215.1,97.0 196.1,93.6" fill="url(#bWarm)" opacity="0.71" />
+          <polygon points="221.0,83.0 239.5,86.7 239.5,101.4 221.0,98.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,87.8 263.5,91.4 263.5,105.7 245.3,102.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="269.2,92.5 287.1,96.0 287.1,109.9 269.2,106.7" fill="url(#bDim)" opacity="1" />
+          <polygon points="292.6,97.1 310.2,100.5 310.2,114.1 292.6,110.9" fill="url(#bWarm)" opacity="0.72" />
+          <polygon points="315.7,101.6 333.1,105.0 333.1,118.1 315.7,115.0" fill="url(#bWarm)" opacity="0.72" />
+          <polygon points="338.5,106.1 355.6,109.4 355.6,122.2 338.5,119.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="361.0,110.5 377.9,113.8 377.9,126.2 361.0,123.1" fill="url(#bWarm)" opacity="0.72" />
+          <polygon points="383.2,114.8 400.0,118.1 400.0,130.1 383.2,127.1" fill="url(#bWarm)" opacity="0.62" />
+          <polygon points="405.2,119.1 421.8,122.4 421.8,134.0 405.2,131.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="427.0,123.4 443.4,126.6 443.4,137.9 427.0,135.0" fill="url(#bWarm)" opacity="0.64" />
+          <polygon points="50.4,76.0 78.4,80.8 78.4,98.3 50.4,93.9" fill="url(#bDim)" opacity="1" />
+          <polygon points="86.5,82.2 109.3,86.1 109.3,103.0 86.5,99.5" fill="url(#bDim)" opacity="1" />
+          <polygon points="116.2,87.3 137.5,90.9 137.5,107.3 116.2,104.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="144.0,92.0 164.2,95.5 164.2,111.5 144.0,108.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="170.5,96.5 190.0,99.9 190.0,115.4 170.5,112.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="196.1,100.9 215.1,104.2 215.1,119.3 196.1,116.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="221.0,105.2 239.5,108.3 239.5,123.1 221.0,120.2" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,109.3 263.5,112.4 263.5,126.8 245.3,124.0" fill="url(#bWarm)" opacity="0.51" />
+          <polygon points="269.2,113.4 287.1,116.5 287.1,130.4 269.2,127.6" fill="url(#bWarm)" opacity="0.68" />
+          <polygon points="292.6,117.4 310.2,120.4 310.2,134.0 292.6,131.2" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="315.7,121.4 333.1,124.3 333.1,137.5 315.7,134.8" fill="url(#bDim)" opacity="1" />
+          <polygon points="338.5,125.3 355.6,128.2 355.6,140.9 338.5,138.3" fill="url(#bDim)" opacity="1" />
+          <polygon points="361.0,129.1 377.9,132.0 377.9,144.4 361.0,141.8" fill="url(#bWarm)" opacity="0.98" />
+          <polygon points="383.2,132.9 400.0,135.8 400.0,147.8 383.2,145.2" fill="url(#bWarm)" opacity="0.68" />
+          <polygon points="405.2,136.7 421.8,139.5 421.8,151.1 405.2,148.6" fill="url(#bWarm)" opacity="0.72" />
+          <polygon points="427.0,140.4 443.4,143.2 443.4,154.5 427.0,151.9" fill="url(#bWarm)" opacity="1.00" />
+          <polygon points="50.4,102.4 78.4,106.5 78.4,123.9 50.4,120.3" fill="url(#bWarm)" opacity="0.94" />
+          <polygon points="86.5,107.6 109.3,111.0 109.3,127.9 86.5,125.0" fill="url(#bWarm)" opacity="0.73" />
+          <polygon points="116.2,112.0 137.5,115.1 137.5,131.6 116.2,128.8" fill="url(#bWarm)" opacity="0.90" />
+          <polygon points="144.0,116.0 164.2,119.0 164.2,135.0 144.0,132.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="170.5,119.9 190.0,122.8 190.0,138.3 170.5,135.8" fill="url(#bWarm)" opacity="0.51" />
+          <polygon points="196.1,123.7 215.1,126.4 215.1,141.6 196.1,139.1" fill="url(#bWarm)" opacity="0.85" />
+          <polygon points="221.0,127.3 239.5,130.0 239.5,144.7 221.0,142.3" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,130.8 263.5,133.5 263.5,147.8 245.3,145.5" fill="url(#bDim)" opacity="1" />
+          <polygon points="269.2,134.3 287.1,136.9 287.1,150.9 269.2,148.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="292.6,137.8 310.2,140.3 310.2,153.8 292.6,151.6" fill="url(#bWarm)" opacity="0.92" />
+          <polygon points="315.7,141.1 333.1,143.7 333.1,156.8 315.7,154.6" fill="url(#bWarm)" opacity="0.52" />
+          <polygon points="338.5,144.4 355.6,146.9 355.6,159.7 338.5,157.5" fill="url(#bWarm)" opacity="0.51" />
+          <polygon points="361.0,147.7 377.9,150.2 377.9,162.6 361.0,160.4" fill="url(#bWarm)" opacity="0.92" />
+          <polygon points="383.2,151.0 400.0,153.4 400.0,165.4 383.2,163.3" fill="url(#bDim)" opacity="1" />
+          <polygon points="405.2,154.2 421.8,156.6 421.8,168.2 405.2,166.1" fill="url(#bWarm)" opacity="0.75" />
+          <polygon points="427.0,157.4 443.4,159.8 443.4,171.0 427.0,168.9" fill="url(#bWarm)" opacity="0.64" />
+          <polygon points="50.4,128.8 78.4,132.2 78.4,149.6 50.4,146.7" fill="url(#bWarm)" opacity="0.53" />
+          <polygon points="86.5,133.1 109.3,135.9 109.3,152.8 86.5,150.5" fill="url(#bWarm)" opacity="0.62" />
+          <polygon points="116.2,136.7 137.5,139.3 137.5,155.8 116.2,153.6" fill="url(#bWarm)" opacity="0.90" />
+          <polygon points="144.0,140.1 164.2,142.5 164.2,158.6 144.0,156.5" fill="url(#bWarm)" opacity="0.58" />
+          <polygon points="170.5,143.3 190.0,145.7 190.0,161.2 170.5,159.2" fill="url(#bWarm)" opacity="0.81" />
+          <polygon points="196.1,146.4 215.1,148.7 215.1,163.8 196.1,161.9" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="221.0,149.4 239.5,151.7 239.5,166.4 221.0,164.5" fill="url(#bWarm)" opacity="0.74" />
+          <polygon points="245.3,152.4 263.5,154.6 263.5,168.9 245.3,167.0" fill="url(#bWarm)" opacity="0.50" />
+          <polygon points="269.2,155.2 287.1,157.4 287.1,171.3 269.2,169.5" fill="url(#bDim)" opacity="1" />
+          <polygon points="292.6,158.1 310.2,160.2 310.2,173.7 292.6,171.9" fill="url(#bWarm)" opacity="0.87" />
+          <polygon points="315.7,160.9 333.1,163.0 333.1,176.1 315.7,174.3" fill="url(#bWarm)" opacity="0.97" />
+          <polygon points="338.5,163.6 355.6,165.7 355.6,178.5 338.5,176.7" fill="url(#bDim)" opacity="1" />
+          <polygon points="361.0,166.4 377.9,168.4 377.9,180.8 361.0,179.0" fill="url(#bDim)" opacity="1" />
+          <polygon points="383.2,169.0 400.0,171.1 400.0,183.1 383.2,181.3" fill="url(#bWarm)" opacity="0.68" />
+          <polygon points="405.2,171.7 421.8,173.7 421.8,185.3 405.2,183.6" fill="url(#bWarm)" opacity="0.94" />
+          <polygon points="427.0,174.3 443.4,176.3 443.4,187.6 427.0,185.9" fill="url(#bWarm)" opacity="0.53" />
+          <polygon points="50.4,155.2 78.4,157.9 78.4,175.3 50.4,173.1" fill="url(#bWarm)" opacity="0.65" />
+          <polygon points="86.5,158.6 109.3,160.8 109.3,177.8 86.5,176.0" fill="url(#bWarm)" opacity="0.80" />
+          <polygon points="116.2,161.5 137.5,163.5 137.5,180.0 116.2,178.3" fill="url(#bWarm)" opacity="0.69" />
+          <polygon points="144.0,164.1 164.2,166.1 164.2,182.1 144.0,180.5" fill="url(#bWarm)" opacity="0.95" />
+          <polygon points="170.5,166.7 190.0,168.6 190.0,184.1 170.5,182.6" fill="url(#bWarm)" opacity="0.71" />
+          <polygon points="196.1,169.1 215.1,171.0 215.1,186.1 196.1,184.6" fill="url(#bWarm)" opacity="0.95" />
+          <polygon points="221.0,171.5 239.5,173.3 239.5,188.1 221.0,186.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,173.9 263.5,175.6 263.5,189.9 245.3,188.5" fill="url(#bWarm)" opacity="0.95" />
+          <polygon points="269.2,176.2 287.1,177.9 287.1,191.8 269.2,190.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="292.6,178.4 310.2,180.1 310.2,193.6 292.6,192.2" fill="url(#bWarm)" opacity="0.98" />
+          <polygon points="315.7,180.6 333.1,182.3 333.1,195.4 315.7,194.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="338.5,182.8 355.6,184.5 355.6,197.2 338.5,195.9" fill="url(#bWarm)" opacity="0.75" />
+          <polygon points="361.0,185.0 377.9,186.6 377.9,199.0 361.0,197.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="383.2,187.1 400.0,188.7 400.0,200.7 383.2,199.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="405.2,189.2 421.8,190.8 421.8,202.4 405.2,201.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="427.0,191.3 443.4,192.9 443.4,204.2 427.0,202.9" fill="url(#bWarm)" opacity="0.99" />
+          <polygon points="50.4,181.6 78.4,183.5 78.4,201.0 50.4,199.5" fill="url(#bDim)" opacity="1" />
+          <polygon points="86.5,184.1 109.3,185.7 109.3,202.7 86.5,201.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="116.2,186.2 137.5,187.7 137.5,204.2 116.2,203.1" fill="url(#bWarm)" opacity="0.54" />
+          <polygon points="144.0,188.2 164.2,189.6 164.2,205.6 144.0,204.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="170.5,190.1 190.0,191.5 190.0,207.0 170.5,206.0" fill="url(#bWarm)" opacity="0.83" />
+          <polygon points="196.1,191.9 215.1,193.2 215.1,208.4 196.1,207.4" fill="url(#bWarm)" opacity="0.88" />
+          <polygon points="221.0,193.7 239.5,195.0 239.5,209.7 221.0,208.7" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,195.4 263.5,196.7 263.5,211.0 245.3,210.0" fill="url(#bWarm)" opacity="0.72" />
+          <polygon points="269.2,197.1 287.1,198.4 287.1,212.3 269.2,211.3" fill="url(#bDim)" opacity="1" />
+          <polygon points="292.6,198.8 310.2,200.0 310.2,213.5 292.6,212.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="315.7,200.4 333.1,201.6 333.1,214.8 315.7,213.8" fill="url(#bWarm)" opacity="0.68" />
+          <polygon points="338.5,202.0 355.6,203.2 355.6,216.0 338.5,215.1" fill="url(#bWarm)" opacity="1.00" />
+          <polygon points="361.0,203.6 377.9,204.8 377.9,217.2 361.0,216.3" fill="url(#bDim)" opacity="1" />
+          <polygon points="383.2,205.2 400.0,206.4 400.0,218.4 383.2,217.5" fill="url(#bWarm)" opacity="0.84" />
+          <polygon points="405.2,206.7 421.8,207.9 421.8,219.6 405.2,218.7" fill="url(#bWarm)" opacity="0.60" />
+          <polygon points="427.0,208.3 443.4,209.5 443.4,220.7 427.0,219.8" fill="url(#bWarm)" opacity="0.66" />
+          <polygon points="50.4,207.9 78.4,209.2 78.4,226.7 50.4,225.9" fill="url(#bWarm)" opacity="0.98" />
+          <polygon points="86.5,209.6 109.3,210.7 109.3,227.6 86.5,226.9" fill="url(#bWarm)" opacity="0.52" />
+          <polygon points="116.2,211.0 137.5,211.9 137.5,228.4 116.2,227.8" fill="url(#bWarm)" opacity="0.59" />
+          <polygon points="144.0,212.2 164.2,213.2 164.2,229.2 144.0,228.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="170.5,213.5 190.0,214.4 190.0,229.9 170.5,229.4" fill="url(#bWarm)" opacity="0.87" />
+          <polygon points="196.1,214.6 215.1,215.5 215.1,230.7 196.1,230.1" fill="url(#bWarm)" opacity="0.95" />
+          <polygon points="221.0,215.8 239.5,216.6 239.5,231.4 221.0,230.8" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="245.3,216.9 263.5,217.7 263.5,232.1 245.3,231.5" fill="url(#bDim)" opacity="1" />
+          <polygon points="269.2,218.0 287.1,218.8 287.1,232.8 269.2,232.2" fill="url(#bWarm)" opacity="0.67" />
+          <polygon points="292.6,219.1 310.2,219.9 310.2,233.4 292.6,232.9" fill="url(#bWarm)" opacity="0.95" />
+          <polygon points="315.7,220.1 333.1,220.9 333.1,234.1 315.7,233.6" fill="url(#bWarm)" opacity="0.54" />
+          <polygon points="338.5,221.2 355.6,222.0 355.6,234.7 338.5,234.2" fill="url(#bWarm)" opacity="0.74" />
+          <polygon points="361.0,222.2 377.9,223.0 377.9,235.4 361.0,234.9" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="383.2,223.3 400.0,224.0 400.0,236.0 383.2,235.5" fill="url(#bWarm)" opacity="0.67" />
+          <polygon points="405.2,224.3 421.8,225.0 421.8,236.7 405.2,236.2" fill="url(#bWarm)" opacity="0.53" />
+          <polygon points="427.0,225.3 443.4,226.0 443.4,237.3 427.0,236.8" fill="url(#bDim)" opacity="1" />
+          <polygon points="50.4,234.3 78.4,234.9 78.4,252.4 50.4,252.3" fill="url(#bWarm)" opacity="0.78" />
+          <polygon points="86.5,235.1 109.3,235.6 109.3,252.5 86.5,252.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="116.2,235.7 137.5,236.2 137.5,252.6 116.2,252.5" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="144.0,236.3 164.2,236.7 164.2,252.7 144.0,252.7" fill="url(#bWarm)" opacity="0.70" />
+          <polygon points="170.5,236.9 190.0,237.3 190.0,252.8 170.5,252.8" fill="url(#bWarm)" opacity="0.56" />
+          <polygon points="196.1,237.4 215.1,237.8 215.1,252.9 196.1,252.9" fill="url(#bDim)" opacity="1" />
+          <polygon points="221.0,237.9 239.5,238.3 239.5,253.0 221.0,253.0" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,238.4 263.5,238.8 263.5,253.1 245.3,253.1" fill="url(#bWarm)" opacity="0.77" />
+          <polygon points="269.2,238.9 287.1,239.3 287.1,253.2 269.2,253.2" fill="url(#bWarm)" opacity="0.67" />
+          <polygon points="292.6,239.4 310.2,239.8 310.2,253.3 292.6,253.2" fill="url(#bWarm)" opacity="0.87" />
+          <polygon points="315.7,239.9 333.1,240.3 333.1,253.4 315.7,253.3" fill="url(#bWarm)" opacity="0.61" />
+          <polygon points="338.5,240.4 355.6,240.7 355.6,253.5 338.5,253.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="361.0,240.9 377.9,241.2 377.9,253.6 361.0,253.5" fill="url(#bDim)" opacity="1" />
+          <polygon points="383.2,241.3 400.0,241.7 400.0,253.7 383.2,253.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="405.2,241.8 421.8,242.1 421.8,253.8 405.2,253.7" fill="url(#bWarm)" opacity="0.97" />
+          <polygon points="427.0,242.2 443.4,242.6 443.4,253.8 427.0,253.8" fill="url(#bDim)" opacity="1" />
+          <polygon points="50.4,260.7 78.4,260.6 78.4,278.1 50.4,278.7" fill="url(#bWarm)" opacity="0.54" />
+          <polygon points="86.5,260.6 109.3,260.5 109.3,277.4 86.5,277.9" fill="url(#bWarm)" opacity="0.57" />
+          <polygon points="116.2,260.5 137.5,260.4 137.5,276.8 116.2,277.3" fill="url(#bDim)" opacity="1" />
+          <polygon points="144.0,260.3 164.2,260.3 164.2,276.3 144.0,276.7" fill="url(#bWarm)" opacity="0.98" />
+          <polygon points="170.5,260.2 190.0,260.2 190.0,275.7 170.5,276.1" fill="url(#bWarm)" opacity="0.68" />
+          <polygon points="196.1,260.1 215.1,260.1 215.1,275.2 196.1,275.6" fill="url(#bWarm)" opacity="0.58" />
+          <polygon points="221.0,260.0 239.5,260.0 239.5,274.7 221.0,275.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,259.9 263.5,259.9 263.5,274.2 245.3,274.6" fill="url(#bWarm)" opacity="0.90" />
+          <polygon points="269.2,259.8 287.1,259.8 287.1,273.7 269.2,274.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="292.6,259.8 310.2,259.7 310.2,273.2 292.6,273.6" fill="url(#bWarm)" opacity="0.79" />
+          <polygon points="315.7,259.7 333.1,259.6 333.1,272.7 315.7,273.1" fill="url(#bWarm)" opacity="0.85" />
+          <polygon points="338.5,259.6 355.6,259.5 355.6,272.3 338.5,272.6" fill="url(#bDim)" opacity="1" />
+          <polygon points="361.0,259.5 377.9,259.4 377.9,271.8 361.0,272.1" fill="url(#bWarm)" opacity="0.67" />
+          <polygon points="383.2,259.4 400.0,259.3 400.0,271.3 383.2,271.7" fill="url(#bWarm)" opacity="0.78" />
+          <polygon points="405.2,259.3 421.8,259.2 421.8,270.9 405.2,271.2" fill="url(#bWarm)" opacity="0.56" />
+          <polygon points="427.0,259.2 443.4,259.2 443.4,270.4 427.0,270.8" fill="url(#bWarm)" opacity="0.91" />
+          <polygon points="50.4,287.1 78.4,286.3 78.4,303.8 50.4,305.1" fill="url(#bDim)" opacity="1" />
+          <polygon points="86.5,286.1 109.3,285.4 109.3,302.3 86.5,303.4" fill="url(#bWarm)" opacity="0.76" />
+          <polygon points="116.2,285.2 137.5,284.6 137.5,301.1 116.2,302.0" fill="url(#bWarm)" opacity="0.69" />
+          <polygon points="144.0,284.4 164.2,283.8 164.2,299.8 144.0,300.8" fill="url(#bWarm)" opacity="0.57" />
+          <polygon points="170.5,283.6 190.0,283.1 190.0,298.6 170.5,299.5" fill="url(#bWarm)" opacity="0.96" />
+          <polygon points="196.1,282.9 215.1,282.3 215.1,297.5 196.1,298.4" fill="url(#bDim)" opacity="1" />
+          <polygon points="221.0,282.2 239.5,281.6 239.5,296.4 221.0,297.2" fill="url(#bDim)" opacity="1" />
+          <polygon points="245.3,281.5 263.5,280.9 263.5,295.3 245.3,296.1" fill="url(#bWarm)" opacity="0.93" />
+          <polygon points="269.2,280.8 287.1,280.2 287.1,294.2 269.2,295.0" fill="url(#bWarm)" opacity="0.54" />
+          <polygon points="292.6,280.1 310.2,279.6 310.2,293.1 292.6,293.9" fill="url(#bDim)" opacity="1" />
+          <polygon points="315.7,279.4 333.1,278.9 333.1,292.1 315.7,292.9" fill="url(#bWarm)" opacity="0.62" />
+          <polygon points="338.5,278.8 355.6,278.3 355.6,291.0 338.5,291.8" fill="url(#bWarm)" opacity="0.53" />
+          <polygon points="361.0,278.1 377.9,277.6 377.9,290.0 361.0,290.8" fill="url(#bWarm)" opacity="0.67" />
+          <polygon points="383.2,277.5 400.0,277.0 400.0,289.0 383.2,289.7" fill="url(#bDim)" opacity="1" />
+          <polygon points="405.2,276.8 421.8,276.3 421.8,288.0 405.2,288.7" fill="url(#bDim)" opacity="1" />
+          <polygon points="427.0,276.2 443.4,275.7 443.4,287.0 427.0,287.7" fill="url(#bWarm)" opacity="0.77" />
+          <line x1="46" y1="44.5" x2="446" y2="124.5" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="71.0" x2="446" y2="141.0" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="97.5" x2="446" y2="157.5" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="124.0" x2="446" y2="174.0" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="150.5" x2="446" y2="190.5" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="177.0" x2="446" y2="207.0" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="203.5" x2="446" y2="223.5" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="230.0" x2="446" y2="240.0" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="256.5" x2="446" y2="256.5" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="283.0" x2="446" y2="273.0" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="309.5" x2="446" y2="289.5" stroke="#4f63c4" stroke-opacity="0.55" stroke-width="1.6" />
+          <line x1="46" y1="18" x2="446" y2="108" stroke="#6d83f2" stroke-width="2.5" />
+          <line x1="46" y1="18" x2="46" y2="336" stroke="#7c8ff0" stroke-opacity="0.7" stroke-width="2" />
+          <polygon points="46,309.5 446,289.5 446,306 46,336" fill="url(#bWarm)" opacity="0.88" />
+          <line x1="82.9" y1="307.7" x2="82.9" y2="333.2" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <line x1="140.8" y1="304.8" x2="140.8" y2="328.9" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <line x1="193.1" y1="302.1" x2="193.1" y2="325.0" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <line x1="242.5" y1="299.7" x2="242.5" y2="321.3" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <line x1="289.9" y1="297.3" x2="289.9" y2="317.7" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <line x1="335.8" y1="295.0" x2="335.8" y2="314.3" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <line x1="380.6" y1="292.8" x2="380.6" y2="310.9" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <line x1="424.4" y1="290.6" x2="424.4" y2="307.6" stroke="#3b2a12" stroke-opacity="0.55" stroke-width="2" />
+          <g transform="translate(64 28) rotate(12.68)">
+            <rect x="0" y="0" width="128" height="18" rx="2" fill="#0b1235" stroke="#f6b44a" stroke-opacity="0.6" />
+            <text x="64" y="13" text-anchor="middle" font-size="10.5" font-weight="800" letter-spacing="2.2" fill="#ffe2a0" font-family="Inter, sans-serif">ONEHOSTEL</text>
+          </g>
+          <rect x="24" y="300" width="4" height="42" fill="#22180f" />
+          <ellipse cx="26" cy="287.9" rx="22" ry="28.6" fill="#123a26" />
+          <ellipse cx="19.4" cy="280.2" rx="12.1" ry="15.4" fill="#1d5537" opacity="0.8" />
+          <rect x="68" y="318" width="4" height="24" fill="#22180f" />
+          <ellipse cx="70" cy="309.75" rx="15" ry="19.5" fill="#123a26" />
+          <ellipse cx="65.5" cy="304.5" rx="8.3" ry="10.5" fill="#1d5537" opacity="0.8" />
+          <rect x="148" y="324" width="4" height="18" fill="#22180f" />
+          <ellipse cx="150" cy="317.4" rx="12" ry="15.6" fill="#123a26" />
+          <ellipse cx="146.4" cy="313.2" rx="6.6" ry="8.4" fill="#1d5537" opacity="0.8" />
+          <rect x="248" y="318" width="4" height="24" fill="#22180f" />
+          <ellipse cx="250" cy="311.95" rx="11" ry="14.3" fill="#123a26" />
+          <ellipse cx="246.7" cy="308.1" rx="6.1" ry="7.7" fill="#1d5537" opacity="0.8" />
+          <rect x="358" y="304" width="4" height="38" fill="#22180f" />
+          <ellipse cx="360" cy="296.85" rx="13" ry="16.9" fill="#123a26" />
+          <ellipse cx="356.1" cy="292.3" rx="7.2" ry="9.1" fill="#1d5537" opacity="0.8" />
+          <rect x="428" y="300" width="4" height="42" fill="#22180f" />
+          <ellipse cx="430" cy="294.5" rx="10" ry="13.0" fill="#123a26" />
+          <ellipse cx="427" cy="291" rx="5.5" ry="7.0" fill="#1d5537" opacity="0.8" />
+        </svg>
+
+        <!-- Dashboard Overview (sample figures, decorative) -->
+        <div class="glass glass--overview">
+          <span class="glass__title">Dashboard Overview</span>
+          <div class="glass__stats">
+            <div class="glass__stat">
+              <span class="glass__stat-icon glass__stat-icon--blue"><mat-icon fontSet="material-icons-outlined">apartment</mat-icon></span>
+              <strong>24</strong>
+              <span>Total Hostels</span>
+            </div>
+            <div class="glass__stat">
+              <span class="glass__stat-icon glass__stat-icon--green"><mat-icon>groups</mat-icon></span>
+              <strong>1,248</strong>
+              <span>Active Residents</span>
+            </div>
+            <div class="glass__stat">
+              <span class="glass__stat-icon glass__stat-icon--purple"><mat-icon>currency_rupee</mat-icon></span>
+              <strong>₹2,45,680</strong>
+              <span>Monthly Revenue</span>
+            </div>
+          </div>
+          <div class="glass__occupancy">
+            <div>
+              <span class="glass__label">Occupancy Rate</span>
+              <strong class="glass__value">82%</strong>
+              <span class="glass__trend">▲ 4.2% <em>vs last month</em></span>
+            </div>
+            <svg class="glass__spark" viewBox="0 0 160 56" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="occFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#6366f1" stop-opacity="0.5" />
+                  <stop offset="1" stop-color="#6366f1" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path d="M0 46 C20 44 28 40 44 40 S70 30 86 32 S112 22 128 18 S150 8 160 6 L160 56 L0 56 Z" fill="url(#occFill)" />
+              <path d="M0 46 C20 44 28 40 44 40 S70 30 86 32 S112 22 128 18 S150 8 160 6" fill="none" stroke="#818cf8" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Recent Activity (sample, decorative) -->
+        <div class="glass glass--activity">
+          <span class="glass__title">Recent Activity</span>
+          <ul class="glass__activity">
+            <li><span class="glass__dot glass__dot--purple"><mat-icon>person_add</mat-icon></span>New resident check-in<em>2m ago</em></li>
+            <li><span class="glass__dot glass__dot--blue"><mat-icon>autorenew</mat-icon></span>Subscription renewed<em>15m ago</em></li>
+            <li><span class="glass__dot glass__dot--green"><mat-icon>payments</mat-icon></span>Payment received<em>1h ago</em></li>
+            <li><span class="glass__dot glass__dot--amber"><mat-icon>build</mat-icon></span>Maintenance request<em>2h ago</em></li>
+          </ul>
+        </div>
+      </div>
+
+      <ul class="login-brand__chips">
+        <li><mat-icon fontSet="material-icons-outlined" class="chip-icon--purple">apartment</mat-icon>Hostels</li>
+        <li><mat-icon class="chip-icon--green">groups</mat-icon>Residents</li>
+        <li><mat-icon fontSet="material-icons-outlined" class="chip-icon--blue">credit_card</mat-icon>Subscriptions</li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<!-- Login ID field, shared by the Password and OTP forms -->
+<ng-template #loginIdField>
+  <div class="login-form__field" [formGroup]="form">
+    <label class="login-form__label" for="login-username">Login ID</label>
+    <mat-form-field appearance="outline" class="full-width custom-outline-field">
+      <input
+        id="login-username"
+        matInput
+        type="text"
+        [placeholder]="method === 'OTP' ? 'Mobile number or email' : 'Email, mobile number or username'"
+        formControlName="username"
+        autocomplete="username"
+        required
+      />
+    </mat-form-field>
+    <app-form-error [control]="form.get('username')" label="Login ID"></app-form-error>
+  </div>
+</ng-template>

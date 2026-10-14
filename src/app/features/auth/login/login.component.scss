@@ -1,0 +1,916 @@
+// Palette kept local to the login screen.
+$navy: #0b1e48;
+$text: #0f172a;
+$muted: #64748b;
+$border: #e2e8f0;
+$field-bg: #f5f7fb;
+$primary: #2563eb; // electric blue accent
+$primary-dark: #2563eb; // accents (tabs, links, focus) use the same electric blue
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  // Dark ribbon artwork behind both halves.
+  background: url('/assets/images/login-bg.svg') center / cover no-repeat, #030b2a;
+  font-family: inherit;
+}
+
+// Brand story on the left (straight on the background), white sign-in card on the right.
+.login-shell {
+  width: 100%;
+  max-width: 1100px;
+  min-height: min(820px, calc(100vh - 64px));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 460px); // brand takes the space, card stays compact
+  gap: 40px;
+  align-items: stretch;
+}
+
+// ---- Right: sign-in card -------------------------------------------------------
+.login-panel {
+  align-self: center; // height fits the form instead of the full screen
+  display: flex;
+  flex-direction: column;
+  padding: 30px 36px 20px;
+  min-width: 0;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+// Logo centred at the top of the card.
+.login-panel__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.login-panel__logo-mark {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: $primary;
+}
+
+.login-panel__logo-text {
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: $primary;
+}
+
+.login-card {
+  flex: 1;
+  width: 100%;
+  max-width: 388px;
+  margin: 0 auto;
+  padding: 18px 0 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  animation: login-fade-in 0.45s ease both;
+}
+
+.login-card--shake {
+  animation: login-card-shake 0.5s ease;
+}
+
+.login-card__header {
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.login-card__title {
+  margin: 0 0 8px;
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: $text;
+}
+
+.login-card__subtitle {
+  margin: 0 auto;
+  max-width: 330px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: $muted;
+}
+
+.login-form__field {
+  margin-bottom: 4px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    padding: 0 4px;
+  }
+}
+
+.login-form__label {
+  display: block;
+  margin: 0 0 8px 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: $text;
+}
+
+.login-form__caps-warning {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 4px 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #b45309;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// White field with a light border; blue ring on focus.
+.custom-outline-field {
+
+  input::placeholder {
+    color: #94a3b8;
+  }
+
+  // Keep browser autofill from painting the field yellow/blue.
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: $text !important;
+    transition: background-color 9999s ease-out 0s;
+  }
+
+  // Hide Edge's built-in reveal/clear button so only our eye toggle shows.
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none !important;
+    width: 0;
+    height: 0;
+  }
+
+  ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background-color: #ffffff !important;
+      border-radius: 12px !important;
+      padding: 0 10px 0 14px !important;
+      transition: background-color 0.15s ease, box-shadow 0.2s ease;
+    }
+
+    .mat-mdc-form-field-flex {
+      align-items: center !important;
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #e6eaf1 !important;
+      transition: border-color 0.15s ease;
+    }
+
+    .mat-mdc-form-field-focus-overlay {
+      background-color: transparent !important;
+    }
+
+    .mat-mdc-form-field-icon-suffix {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 2px !important;
+    }
+  }
+
+  &:hover:not(.mat-focused):not(.mat-form-field-invalid) ::ng-deep {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #cbd5e1 !important;
+    }
+  }
+
+  &.mat-focused ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      background-color: #ffffff !important;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: $primary-dark !important;
+      border-width: 1.5px !important;
+    }
+  }
+
+  &.mat-focused input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  }
+
+  &.mat-form-field-invalid ::ng-deep {
+    .mat-mdc-text-field-wrapper {
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #ef4444 !important;
+    }
+  }
+}
+
+.eye-icon-button {
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+
+  .eye-icon {
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    color: #64748b;
+    transition: color 0.15s ease;
+  }
+
+  &:hover .eye-icon {
+    color: $text;
+  }
+
+  &.eye-icon-button--active .eye-icon {
+    color: $primary-dark;
+  }
+}
+
+.login-form__row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 0 0 20px;
+}
+
+// "Password" label with "Forgot Password?" on the same line.
+.login-form__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  .login-form__label {
+    margin: 0 0 0 2px;
+  }
+}
+
+.login-form__forgot {
+  font-size: 14px;
+  font-weight: 600;
+  color: $primary-dark;
+  text-decoration: none;
+  border-radius: 4px;
+
+  &:hover {
+    color: #1e40af;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-dark;
+    outline-offset: 2px;
+  }
+}
+
+.login-form__submit-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+
+  ::ng-deep button {
+    width: 100%;
+    height: var(--btn-height-lg) !important;
+    border-radius: var(--btn-radius) !important;
+    padding: 0 var(--btn-padding-x) !important;
+    font-size: var(--btn-font-size) !important;
+    font-weight: 600 !important;
+    line-height: var(--btn-height-lg) !important;
+    transition: all 0.2s ease !important;
+
+    &:not([disabled]) {
+      background: $primary !important;
+      color: #ffffff !important;
+      box-shadow: 0 10px 24px -10px rgba(37, 99, 235, 0.6) !important;
+    }
+
+    &:not([disabled]):hover {
+      background: #1d4ed8 !important; // hover
+      transform: translateY(-1px);
+    }
+
+    &:not([disabled]):active {
+      transform: translateY(0);
+    }
+
+    &:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.35);
+      outline-offset: 3px;
+    }
+
+    // Disabled must read as disabled, not just block clicks.
+    &[disabled] {
+      background-color: #e2e8f0 !important;
+      color: #94a3b8 !important;
+      box-shadow: none !important;
+      cursor: not-allowed !important;
+    }
+  }
+}
+
+// "or" between two lines.
+.login-form__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  font-size: 13px;
+  color: #64748b;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $border;
+  }
+
+
+}
+
+// Secondary action: outlined in the brand blue.
+.login-form__demo {
+  padding: 0 var(--btn-padding-x);
+  width: 100%;
+  height: var(--btn-height-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1.5px solid #93b4f5;
+  border-radius: var(--btn-radius);
+  background: #ffffff;
+  color: $primary;
+  font-family: inherit;
+  font-size: var(--btn-font-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: #eff6ff;
+    border-color: $primary-dark;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-dark;
+    outline-offset: 2px;
+  }
+}
+
+// Shown after an automatic sign-out (Session Timeout)
+.login-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -8px 0 18px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  font-size: 13px;
+  color: #92400e;
+
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Password / OTP: underlined tabs
+.login-method {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 22px;
+  border-bottom: 1px solid $border;
+}
+
+.login-method__tab {
+  position: relative;
+  height: 46px;
+  border: none;
+  background: transparent;
+  color: $muted;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: transparent;
+    transition: background 0.15s ease;
+  }
+
+  &:hover:not(.login-method__tab--active) {
+    color: $text;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-dark;
+    outline-offset: -2px;
+    border-radius: 6px;
+  }
+}
+
+.login-method__tab--active {
+  color: $primary-dark;
+
+  &::after {
+    background: $primary-dark;
+  }
+}
+
+.login-form__submit-btn--spaced {
+  margin-top: 12px;
+}
+
+// OTP step
+.otp-sent {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $muted;
+
+  strong {
+    color: $text;
+  }
+}
+
+.otp-sent__change,
+.otp-resend {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: $primary-dark;
+  cursor: pointer;
+
+  &:hover:not([disabled]) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-dark;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+.otp-sent__change {
+  margin-left: 4px;
+}
+
+.otp-resend--wait {
+  cursor: default;
+  font-weight: 500;
+  color: $muted;
+}
+
+.otp-field input {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+}
+
+.otp-demo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #eff6ff;
+  font-size: 13px;
+  color: #1e40af;
+
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  strong {
+    letter-spacing: 0.15em;
+  }
+}
+
+.login-card__secure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 18px 0 0;
+  font-size: 12.5px;
+  color: $muted;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #16a34a;
+  }
+}
+
+// "Powered by RV" on one line.
+.login-panel__footer {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+// ---- Left: brand panel (decorative) ---------------------------------------------
+.login-brand {
+  order: -1; // visually on the left; the form stays first in the DOM for keyboard/screen readers
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 0;
+  padding: 24px 8px 8px;
+  color: #ffffff;
+}
+
+.login-brand__intro > * {
+  animation: login-fade-in 0.5s ease both;
+}
+
+.login-brand__intro > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.login-brand__tagline {
+  margin: 0 0 18px;
+  max-width: 480px; // two lines, as in the design
+  font-size: 54px;
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.login-brand__subtitle {
+  margin: 0;
+  max-width: 290px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+// Illustration: wide hostel building (lower left) + floating glass dashboard cards.
+.brand-scene {
+  position: relative;
+  flex: 1;
+  min-height: 380px;
+  max-height: 470px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.brand-scene__building {
+  position: absolute;
+  left: -2%;
+  bottom: 0;
+  width: 88%;
+  max-width: 520px;
+  max-height: 100%;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.5));
+}
+
+.glass {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(17, 24, 64, 0.72);
+  border: 1px solid rgba(165, 180, 252, 0.25);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45);
+  animation: glass-float 7s ease-in-out infinite;
+}
+
+.glass__title {
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.glass__label {
+  display: block;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.glass__value {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.glass__trend {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #4ade80;
+
+  em {
+    font-style: normal;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+// Dashboard Overview: three stat tiles + occupancy chart
+.glass--overview {
+  top: 0;
+  right: 0;
+  width: 300px;
+  animation-delay: -2s;
+}
+
+.glass__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.glass__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+
+  strong {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  span:last-child {
+    font-size: 9.5px;
+    color: rgba(255, 255, 255, 0.65);
+  }
+}
+
+.glass__stat-icon {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.glass__stat-icon--blue { background: rgba(59, 130, 246, 0.25); color: #93c5fd; }
+.glass__stat-icon--green { background: rgba(34, 197, 94, 0.22); color: #86efac; }
+.glass__stat-icon--purple { background: rgba(139, 92, 246, 0.25); color: #c4b5fd; }
+
+.glass__occupancy {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.glass__spark {
+  flex: 1;
+  height: 56px;
+}
+
+// Recent Activity
+.glass--activity {
+  bottom: 6%;
+  right: 6%;
+  width: 230px;
+  animation-delay: -4.5s;
+}
+
+.glass__activity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+  }
+}
+
+.glass__dot {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    font-size: 13px;
+    width: 13px;
+    height: 13px;
+  }
+}
+
+.glass__dot--purple { background: rgba(139, 92, 246, 0.28); color: #c4b5fd; }
+.glass__dot--blue { background: rgba(59, 130, 246, 0.28); color: #93c5fd; }
+.glass__dot--green { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+.glass__dot--amber { background: rgba(245, 158, 11, 0.25); color: #fcd34d; }
+
+.login-brand__chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .chip-icon--purple { color: #a78bfa; }
+  .chip-icon--green { color: #4ade80; }
+  .chip-icon--blue { color: #60a5fa; }
+}
+
+// ---- Motion ------------------------------------------------------------------
+@keyframes login-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes login-card-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+
+@keyframes glass-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-card,
+  .login-card--shake,
+  .login-brand__intro > *,
+  .glass {
+    animation: none;
+  }
+}
+
+// ---- Responsive --------------------------------------------------------------
+@media (max-width: 1200px) {
+  .login-brand__tagline {
+    font-size: 42px;
+  }
+
+  .glass--overview {
+    right: 6%;
+  }
+}
+
+@media (max-width: 960px) {
+  .login-page {
+    padding: 0;
+    background: #ffffff;
+  }
+
+  .login-shell {
+    grid-template-columns: 1fr;
+    min-height: 100vh;
+  }
+
+  .login-brand {
+    display: none;
+  }
+
+  .login-panel {
+    padding: 28px 24px 16px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 440px) {
+  .login-panel {
+    padding: 20px 16px 16px;
+  }
+
+  .login-card {
+    padding: 28px 0;
+  }
+
+  .login-card__title {
+    font-size: 28px;
+  }
+
+  // 16px inputs stop iOS Safari from zooming in when a field is tapped.
+  .custom-outline-field input {
+    font-size: 16px;
+  }
+}
