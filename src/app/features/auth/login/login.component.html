@@ -104,13 +104,6 @@
             >
               Login
             </app-button>
-
-            <div class="login-form__divider" role="separator"><span>or</span></div>
-
-            <button type="button" class="login-form__demo" (click)="fillDemoCredentials()">
-              <mat-icon fontSet="material-icons-outlined">rocket_launch</mat-icon>
-              Use demo credentials
-            </button>
           </form>
         } @else if (!otpChallenge) {
           <!-- OTP step 1: who are you? -->
@@ -197,7 +190,7 @@
       <div class="login-brand__intro">
         <h2 class="login-brand__tagline">Run every hostel, from one place.</h2>
         <p class="login-brand__subtitle">
-          Manage hostels, residents, and subscriptions from a single centralized dashboard.
+          Manage hostels, tenants, and subscriptions from a single centralized dashboard.
         </p>
       </div>
 
@@ -457,7 +450,7 @@
             <div class="glass__stat">
               <span class="glass__stat-icon glass__stat-icon--green"><mat-icon>groups</mat-icon></span>
               <strong>1,248</strong>
-              <span>Active Residents</span>
+              <span>Active Tenants</span>
             </div>
             <div class="glass__stat">
               <span class="glass__stat-icon glass__stat-icon--purple"><mat-icon>currency_rupee</mat-icon></span>
@@ -488,7 +481,7 @@
         <div class="glass glass--activity">
           <span class="glass__title">Recent Activity</span>
           <ul class="glass__activity">
-            <li><span class="glass__dot glass__dot--purple"><mat-icon>person_add</mat-icon></span>New resident check-in<em>2m ago</em></li>
+            <li><span class="glass__dot glass__dot--purple"><mat-icon>person_add</mat-icon></span>New tenant check-in<em>2m ago</em></li>
             <li><span class="glass__dot glass__dot--blue"><mat-icon>autorenew</mat-icon></span>Subscription renewed<em>15m ago</em></li>
             <li><span class="glass__dot glass__dot--green"><mat-icon>payments</mat-icon></span>Payment received<em>1h ago</em></li>
             <li><span class="glass__dot glass__dot--amber"><mat-icon>build</mat-icon></span>Maintenance request<em>2h ago</em></li>
@@ -498,7 +491,7 @@
 
       <ul class="login-brand__chips">
         <li><mat-icon fontSet="material-icons-outlined" class="chip-icon--purple">apartment</mat-icon>Hostels</li>
-        <li><mat-icon class="chip-icon--green">groups</mat-icon>Residents</li>
+        <li><mat-icon class="chip-icon--green">groups</mat-icon>Tenants</li>
         <li><mat-icon fontSet="material-icons-outlined" class="chip-icon--blue">credit_card</mat-icon>Subscriptions</li>
       </ul>
     </section>

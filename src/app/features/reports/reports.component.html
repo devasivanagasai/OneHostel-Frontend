@@ -192,28 +192,28 @@
   @if (activeReport === 'residents') {
     <div class="stat-row stat-row--3">
       <div class="stat-tile">
-        <div class="stat-tile__label">Total Residents</div>
+        <div class="stat-tile__label">Total Tenants</div>
         <div class="stat-tile__value">{{ residentStats.total | number }}</div>
       </div>
       <div class="stat-tile">
-        <div class="stat-tile__label">Active Residents</div>
+        <div class="stat-tile__label">Active Tenants</div>
         <div class="stat-tile__value">{{ residentStats.active | number }}</div>
       </div>
       <div class="stat-tile">
-        <div class="stat-tile__label">Checked-out Residents</div>
+        <div class="stat-tile__label">Checked-out Tenants</div>
         <div class="stat-tile__value">{{ residentStats.checkedOut | number }}</div>
       </div>
     </div>
 
     <div class="report-grid">
       <div class="saas-card chart-card">
-        <h3 class="card-title">Active Residents by Hostel</h3>
-        <p class="card-subtitle">Residents currently staying</p>
-        <app-report-bar-list [items]="hostelResidentBars" unit="residents" caption="Active residents by hostel"></app-report-bar-list>
+        <h3 class="card-title">Active Tenants by Hostel</h3>
+        <p class="card-subtitle">Tenants currently staying</p>
+        <app-report-bar-list [items]="hostelResidentBars" unit="tenants" caption="Active tenants by hostel"></app-report-bar-list>
       </div>
 
       <div class="saas-card table-card">
-        <h3 class="card-title">Hostel-wise Residents</h3>
+        <h3 class="card-title">Hostel-wise Tenants</h3>
         <div class="table-responsive">
           <table class="saas-table">
             <thead>

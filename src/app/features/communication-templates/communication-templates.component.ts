@@ -441,7 +441,7 @@ export class CommunicationTemplatesComponent {
     return this.filteredRows.slice(start, start + this.pageSize);
   }
 
-  /** "Admin Account Created (SMS)" → "AA" */
+  /** "Hostel Owner Account Created (SMS)" → "HO" */
   initials(name: string): string {
     return name
       .split(/\s+/)

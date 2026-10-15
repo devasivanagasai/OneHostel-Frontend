@@ -46,7 +46,7 @@ function nowIso(): string {
 }
 
 /**
- * Hostel admin accounts and the account actions a SuperAdmin can take.
+ * Hostel owner accounts and the account actions an Admin can take.
  * Each action asks for confirmation, updates the account and writes an
  * audit entry. UI-only build: data is in-memory mock data.
  */
@@ -86,7 +86,7 @@ export class AdminService {
 
     this.patch(adminId, changes);
     this.auditLog.record('Update Admin', current.username, { changes: auditChanges });
-    this.toast('Admin details updated');
+    this.toast('Hostel owner details updated');
     return true;
   }
 
@@ -106,14 +106,14 @@ export class AdminService {
         confirmLabel: 'Send temporary password',
       },
       activate: {
-        title: 'Activate admin?',
+        title: 'Activate hostel owner?',
         message: `${name} will be able to sign in to ${admin.hostelName} again.`,
         icon: 'check_circle_outline',
         tone: 'success',
         confirmLabel: 'Activate',
       },
       deactivate: {
-        title: 'Deactivate admin?',
+        title: 'Deactivate hostel owner?',
         message: `${name} will be signed out and can no longer access ${admin.hostelName}.`,
         icon: 'person_off',
         note: 'You can reactivate the account later.',
@@ -177,8 +177,8 @@ export class AdminService {
         break;
 
       case 'lock':
-        this.patch(admin.adminId, { status: 'Locked', lockReason: 'Locked manually by SuperAdmin.', lockedAt: now });
-        this.hostelAdmins.setLocked(admin.email, true, 'Locked manually by SuperAdmin.'); // also blocks login
+        this.patch(admin.adminId, { status: 'Locked', lockReason: 'Locked manually by Admin.', lockedAt: now });
+        this.hostelAdmins.setLocked(admin.email, true, 'Locked manually by Admin.'); // also blocks login
         this.auditLog.record('Lock Admin', admin.username, { changes: statusChange('Locked') });
         this.toast(`${adminFullName(admin)}'s account locked`);
         break;

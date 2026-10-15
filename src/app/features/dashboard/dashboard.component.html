@@ -79,7 +79,12 @@
       </div>
       <div class="stat-grid">
         @for (card of group.cards; track card.label) {
-          <a class="stat-card stat-card--{{ card.tone ?? 'teal' }}" [routerLink]="card.route" [queryParams]="card.queryParams">
+          <a
+            class="stat-card stat-card--{{ card.tone ?? 'teal' }}"
+            [class.stat-card--static]="!canAccess(card.route)"
+            [routerLink]="canAccess(card.route) ? card.route : null"
+            [queryParams]="card.queryParams"
+          >
             <div class="stat-card__top">
               <span class="stat-card__icon"><mat-icon>{{ card.icon }}</mat-icon></span>
               <span class="stat-card__label">{{ card.label }}</span>
@@ -98,7 +103,8 @@
   <!-- Main grid -->
   <div class="dash-row">
     <div class="main-col">
-    <!-- Quick actions -->
+    <!-- Quick actions (Admin modules only) -->
+    @if (quickActions.length) {
     <div class="dash-card">
       <div class="dash-card__header">
         <h2 class="dash-card__title">Quick Actions</h2>
@@ -112,6 +118,7 @@
         }
       </div>
     </div>
+    }
 
     <!-- Occupancy by hostel -->
     <div class="dash-card chart-card">
@@ -120,7 +127,9 @@
           <h2 class="dash-card__title">Occupancy by Hostel</h2>
           <p class="dash-card__subtitle">Occupied beds out of total beds, as of today</p>
         </div>
-        <a routerLink="/reports" class="view-all">Reports <mat-icon>arrow_forward</mat-icon></a>
+        @if (canAccess('/reports')) {
+          <a routerLink="/reports" class="view-all">Reports <mat-icon>arrow_forward</mat-icon></a>
+        }
       </div>
 
       @if (hostelOccupancy.length) {
@@ -262,7 +271,9 @@
   <div class="dash-card activity-card">
     <div class="dash-card__header">
       <h2 class="dash-card__title">Recent Activity</h2>
-      <a routerLink="/audit-logs" class="view-all">View all <mat-icon>arrow_forward</mat-icon></a>
+      @if (canAccess('/audit-logs')) {
+        <a routerLink="/audit-logs" class="view-all">View all <mat-icon>arrow_forward</mat-icon></a>
+      }
     </div>
 
     <div class="table-responsive">

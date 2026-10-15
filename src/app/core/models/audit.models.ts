@@ -1,8 +1,8 @@
 export type AuditModule =
   | 'Auth'
   | 'Hostel'
-  | 'Admin'
-  | 'Resident'
+  | 'Hostel Owner'
+  | 'Tenant'
   | 'Subscription Plan'
   | 'Subscription & Payment'
   | 'Communication Template'
@@ -19,16 +19,16 @@ export const AUDIT_EVENTS = {
   'Update Hostel': { module: 'Hostel', action: 'Update' },
   'Activate Hostel': { module: 'Hostel', action: 'Activate' },
   'Deactivate Hostel': { module: 'Hostel', action: 'Deactivate' },
-  'Create Admin': { module: 'Admin', action: 'Create' },
-  'Update Admin': { module: 'Admin', action: 'Update' },
-  'Activate Admin': { module: 'Admin', action: 'Activate' },
-  'Deactivate Admin': { module: 'Admin', action: 'Deactivate' },
-  'Lock Admin': { module: 'Admin', action: 'Lock' },
-  'Unlock Admin': { module: 'Admin', action: 'Unlock' },
-  'Activate Resident': { module: 'Resident', action: 'Activate' },
-  'Deactivate Resident': { module: 'Resident', action: 'Deactivate' },
-  'Block Resident': { module: 'Resident', action: 'Block' },
-  'Unblock Resident': { module: 'Resident', action: 'Unblock' },
+  'Create Admin': { module: 'Hostel Owner', action: 'Create' },
+  'Update Admin': { module: 'Hostel Owner', action: 'Update' },
+  'Activate Admin': { module: 'Hostel Owner', action: 'Activate' },
+  'Deactivate Admin': { module: 'Hostel Owner', action: 'Deactivate' },
+  'Lock Admin': { module: 'Hostel Owner', action: 'Lock' },
+  'Unlock Admin': { module: 'Hostel Owner', action: 'Unlock' },
+  'Activate Resident': { module: 'Tenant', action: 'Activate' },
+  'Deactivate Resident': { module: 'Tenant', action: 'Deactivate' },
+  'Block Resident': { module: 'Tenant', action: 'Block' },
+  'Unblock Resident': { module: 'Tenant', action: 'Unblock' },
   'Create Plan': { module: 'Subscription Plan', action: 'Create' },
   'Update Plan': { module: 'Subscription Plan', action: 'Update' },
   'Activate Plan': { module: 'Subscription Plan', action: 'Activate' },
@@ -46,8 +46,8 @@ export const AUDIT_EVENT_NAMES = Object.keys(AUDIT_EVENTS) as AuditEvent[];
 export const AUDIT_MODULES: AuditModule[] = [
   'Auth',
   'Hostel',
-  'Admin',
-  'Resident',
+  'Hostel Owner',
+  'Tenant',
   'Subscription Plan',
   'Subscription & Payment',
   'Communication Template',
@@ -85,6 +85,14 @@ export function auditModule(log: AuditLog): AuditModule {
 
 export function auditAction(log: AuditLog): string {
   return AUDIT_EVENTS[log.event].action;
+}
+
+/**
+ * How an event name is shown on screen. The stored keys ("Lock Admin", "Block Resident") stay
+ * unchanged so entries saved earlier still work; users see the current role names.
+ */
+export function auditEventLabel(event: string): string {
+  return event.replace(/\bAdmin$/, 'Hostel Owner').replace(/\bResident$/, 'Tenant');
 }
 
 /**

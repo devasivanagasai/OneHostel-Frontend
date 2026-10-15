@@ -6,10 +6,27 @@ import { environment } from '../../../environments/environment';
 import { AuthUser, LoginErrorCode, LoginRequest, LoginResponse, OtpChallenge } from '../models/auth.models';
 import { AuditLogService } from './audit-log.service';
 import { HostelAdminAccount, HostelAdminAccountService } from './hostel-admin-account.service';
+import { builtInPassword, findBuiltInAccount } from '../models/built-in-accounts';
 import { SystemSettingsService } from './system-settings.service';
 
 const TOKEN_KEY = 'onehostel_token';
 const USER_KEY = 'onehostel_user';
+/** Admin-only modules. Hostel Owners and Tenants see only the Dashboard and their own account pages. */
+export const ADMIN_ONLY_ROUTES = [
+  '/hostel-onboarding',
+  '/subscription-plans',
+  '/communication-templates',
+  '/admins',
+  '/users',
+  '/subscription-payments',
+  '/reports',
+  '/audit-logs',
+  '/settings',
+  '/institution',
+  '/hostels',
+];
+/** When this browser last signed in (ISO). Kept after sign-out so My Profile can show it. */
+const LAST_LOGIN_KEY = 'onehostel_last_login';
 /** Used if Security Settings has no valid OTP Expiry. */
 const DEFAULT_OTP_EXPIRY_MINUTES = 5;
 /** Used if Security Settings has no valid Maximum Login Attempts. */
@@ -72,7 +89,28 @@ export class AuthService {
       return this.completeLogin(this.hostelAdminResponse(account), request.rememberMe ?? false);
     }
 
-    // Anyone else is treated as the mock SuperAdmin.
+    // Built-in Admin / Tenant sign-ins (see built-in-accounts.ts) check their password.
+    const builtIn = findBuiltInAccount(identifier);
+    if (builtIn) {
+      if (request.password !== builtInPassword(builtIn)) {
+        this.auditLog.record('Login', builtIn.email, { status: 'Failed', details: 'Incorrect password.' });
+        return this.fail('Incorrect password.');
+      }
+      return this.completeLogin(
+        {
+          token: `mock-token-${Date.now()}`,
+          user: {
+            id: builtIn.id,
+            name: `${builtIn.firstName} ${builtIn.lastName}`,
+            email: builtIn.email,
+            roles: [builtIn.role],
+          },
+        },
+        request.rememberMe ?? false,
+      );
+    }
+
+    // Anyone else is treated as the mock Admin.
     return this.completeLogin(
       { token: `mock-token-${Date.now()}`, user: { id: 'mock-superadmin', name: identifier, email: identifier } },
       request.rememberMe ?? false,
@@ -143,7 +181,7 @@ export class AuthService {
 
   private lockedError(): Observable<never> {
     return this.fail(
-      'This account is locked after too many failed login attempts. Contact your SuperAdmin to unlock it.',
+      'This account is locked after too many failed login attempts. Contact your Admin to unlock it.',
       401,
       'LOCKED',
     );
@@ -160,6 +198,20 @@ export class AuthService {
     }
     this.clearSession();
     this.router.navigate(['/login'], reason ? { queryParams: { reason } } : {});
+  }
+
+  /**
+   * Admin role: the built-in Admin, or the mock Admin sign-in (which carries no roles).
+   * Hostel Owners and Tenants are not Admins.
+   */
+  get isAdmin(): boolean {
+    const roles = this.currentUser?.roles;
+    return !roles?.length || roles.includes('Admin');
+  }
+
+  /** Whether the signed-in user may open this route (the Admin modules are Admin-only). */
+  canAccess(route: string): boolean {
+    return this.isAdmin || !ADMIN_ONLY_ROUTES.some((r) => route === r || route.startsWith(r + '/'));
   }
 
   isAuthenticated(): boolean {
@@ -192,7 +244,7 @@ export class AuthService {
         id: `${account.hostelId}-admin`,
         name: account.name || account.username,
         email: account.email,
-        roles: ['HostelAdmin'],
+        roles: ['HostelOwner'],
       },
     };
   }
@@ -218,7 +270,21 @@ export class AuthService {
     const storage = rememberMe ? localStorage : sessionStorage;
     storage.setItem(TOKEN_KEY, response.token);
     storage.setItem(USER_KEY, JSON.stringify(response.user));
+    try {
+      localStorage.setItem(LAST_LOGIN_KEY, new Date().toISOString());
+    } catch {
+      // Storage blocked: Last Login just isn't shown.
+    }
     this.currentUserSubject.next(response.user);
+  }
+
+  /** When the user last signed in on this browser, or null if unknown. */
+  get lastLoginAt(): string | null {
+    try {
+      return localStorage.getItem(LAST_LOGIN_KEY);
+    } catch {
+      return null;
+    }
   }
 
   private clearSession(): void {

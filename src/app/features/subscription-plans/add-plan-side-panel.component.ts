@@ -17,7 +17,7 @@ export interface FeatureItem {
 }
 
 export const FEATURE_CONFIG_ITEMS: FeatureItem[] = [
-  { id: 'residentManagement', name: 'Resident Management', icon: 'groups', tone: 'blue' },
+  { id: 'residentManagement', name: 'Tenant Management', icon: 'groups', tone: 'blue' },
   { id: 'roomManagement', name: 'Room Management', icon: 'bed', tone: 'purple' },
   { id: 'payments', name: 'Payments', icon: 'payments', tone: 'green' },
   { id: 'complaints', name: 'Complaints', icon: 'chat_bubble', tone: 'orange' },
@@ -125,10 +125,10 @@ const CYCLE_SUFFIX: Record<SubscriptionPlanRow['billingCycle'], string> = {
                 </div>
 
                 <div class="field">
-                  <label class="field__label" for="plan-limit">Resident Limit <span class="req">*</span></label>
+                  <label class="field__label" for="plan-limit">Tenant Limit <span class="req">*</span></label>
                   <input id="plan-limit" class="text-input" type="number" min="1" formControlName="residentLimit" placeholder="e.g. 200" />
                   @if (showError('residentLimit')) {
-                    <span class="field__error">{{ planForm.get('residentLimit')?.hasError('min') ? 'Limit must be 1 or higher' : 'Resident limit is required' }}</span>
+                    <span class="field__error">{{ planForm.get('residentLimit')?.hasError('min') ? 'Limit must be 1 or higher' : 'Tenant limit is required' }}</span>
                   }
                 </div>
               </div>

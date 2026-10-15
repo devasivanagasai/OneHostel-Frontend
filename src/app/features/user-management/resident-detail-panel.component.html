@@ -18,7 +18,7 @@
               {{ r.status }}
             </span>
           </div>
-          <div class="panel-subtitle">{{ r.residentId }} <span class="sep">·</span> Resident</div>
+          <div class="panel-subtitle">{{ r.residentId }} <span class="sep">·</span> Tenant</div>
         </div>
       </div>
       <button mat-icon-button type="button" class="close-btn" (click)="closePanel.emit()" aria-label="Close panel">
@@ -56,7 +56,7 @@
             <mat-icon fontSet="material-icons-outlined">warning_amber</mat-icon>
             <div>
               <div class="alert__title">Account blocked{{ r.blockedAt ? ' on ' + (r.blockedAt | appDate: 'datetime') + '.' : '' }}</div>
-              <div>{{ r.blockReason || 'This resident cannot use the app until unblocked.' }}</div>
+              <div>{{ r.blockReason || 'This tenant cannot use the app until unblocked.' }}</div>
             </div>
           </div>
         }
@@ -73,7 +73,7 @@
             <div class="info-card__content">
               <h3 class="info-card__title">Personal</h3>
               <dl class="detail-grid detail-grid--single">
-                <div><dt>Resident ID</dt><dd>{{ r.residentId }}</dd></div>
+                <div><dt>Tenant ID</dt><dd>{{ r.residentId }}</dd></div>
                 <div><dt>Name</dt><dd>{{ name(r) }}</dd></div>
                 <div><dt>Gender</dt><dd>{{ r.gender }}</dd></div>
                 <div><dt>Email</dt><dd><a [href]="'mailto:' + r.email">{{ r.email }}</a></dd></div>
@@ -87,7 +87,7 @@
             <div class="info-card__content">
               <h3 class="info-card__title">Account</h3>
               <dl class="detail-grid">
-                <div><dt>Role</dt><dd>Resident</dd></div>
+                <div><dt>Role</dt><dd>Tenant</dd></div>
                 <div><dt>Last Login</dt><dd>{{ r.lastLogin ? (r.lastLogin | appDate: 'datetime') : 'Never' }}</dd></div>
                 <div>
                   <dt>Status</dt>
@@ -130,7 +130,7 @@
           <div class="activity-empty">
             <mat-icon>history_toggle_off</mat-icon>
             <div class="activity-empty__title">No activity recorded yet</div>
-            <div class="activity-empty__hint">Resident-app sign-ins and account changes will appear here.</div>
+            <div class="activity-empty__hint">Tenant-app sign-ins and account changes will appear here.</div>
           </div>
         } @else {
           <!-- Timeline: day label, then time · icon on the line · event card -->

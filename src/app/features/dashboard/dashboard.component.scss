@@ -169,6 +169,20 @@ $line: #eef2f7;
 .stat-card--red { --tone: #e11d48; --tone-soft: #ffebf0; }
 .stat-card--purple { --tone: #7c3aed; --tone-soft: #f1ebff; }
 
+/* Cards whose page is Admin-only (Hostel Owner / Tenant): information only, no link. */
+.stat-card.stat-card--static {
+  cursor: default;
+
+  &:hover {
+    transform: none;
+    box-shadow: 0 8px 24px rgba(15, 34, 74, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  }
+
+  .stat-card__go {
+    display: none;
+  }
+}
+
 .stat-card__top {
   display: flex;
   align-items: center;

@@ -95,7 +95,7 @@ const toIsoDate = (d: Date): string =>
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    ReportBarListComponent,
+    ReportBarListComponent,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './reports.component.html',
@@ -107,7 +107,7 @@ export class ReportsComponent {
 
   readonly tabs: ReportTab[] = [
     { key: 'hostels', label: 'Hostel Report', icon: 'apartment', dateField: 'onboarding date' },
-    { key: 'residents', label: 'Resident Report', icon: 'groups' },
+    { key: 'residents', label: 'Tenant Report', icon: 'groups' },
     { key: 'occupancy', label: 'Occupancy Report', icon: 'bed' },
     { key: 'subscriptions', label: 'Subscription Report', icon: 'card_membership', dateField: 'start date' },
     { key: 'revenue', label: 'Revenue Report', icon: 'payments', dateField: 'payment date' },
@@ -414,9 +414,9 @@ export class ReportsComponent {
           columns: [
             { header: 'Hostel', value: (h: ReportHostel) => h.hostelName },
             { header: 'City', value: (h: ReportHostel) => h.city },
-            { header: 'Active Residents', value: (h: ReportHostel) => h.activeResidents, numeric: true },
-            { header: 'Checked-out Residents', value: (h: ReportHostel) => h.checkedOutResidents, numeric: true },
-            { header: 'Total Residents', value: (h: ReportHostel) => h.activeResidents + h.checkedOutResidents, numeric: true },
+            { header: 'Active Tenants', value: (h: ReportHostel) => h.activeResidents, numeric: true },
+            { header: 'Checked-out Tenants', value: (h: ReportHostel) => h.checkedOutResidents, numeric: true },
+            { header: 'Total Tenants', value: (h: ReportHostel) => h.activeResidents + h.checkedOutResidents, numeric: true },
           ],
           totals: ['Total', '', s.active, s.checkedOut, s.total],
         };

@@ -112,14 +112,33 @@ export class ChangePasswordComponent implements UnsavedChangesAware {
     return d;
   }
 
-  /** Strength bar fill (0–100) and colour tone for the current score (0–4). */
-  get strengthPercent(): number {
-    return this.form.controls.newPassword.value ? Math.max(8, (this.strength.score / 4) * 100) : 0;
+  /** The four strength segments, weakest first. */
+  readonly strengthLevels = [
+    { key: 'weak', label: 'Weak' },
+    { key: 'medium', label: 'Medium' },
+    { key: 'strong', label: 'Strong' },
+    { key: 'very-strong', label: 'Very Strong' },
+  ];
+
+  /** How many segments are lit (0 when empty; at least 1 once something is typed). */
+  get strengthFilled(): number {
+    if (!this.form.controls.newPassword.value) return 0;
+    return Math.min(4, Math.max(1, this.strength.score));
   }
 
-  get strengthTone(): 'weak' | 'fair' | 'good' | 'strong' {
-    const s = this.strength.score;
-    return s <= 1 ? 'weak' : s === 2 ? 'fair' : s === 3 ? 'good' : 'strong';
+  get strengthLevel(): string {
+    return this.strengthLevels[Math.max(0, this.strengthFilled - 1)].key;
+  }
+
+  get strengthLabel(): string {
+    return this.strengthLevels[Math.max(0, this.strengthFilled - 1)].label;
+  }
+
+  /** Colour of the expiry card: green (fine / never), amber (14 days or less), red (expired). */
+  get expiryTone(): 'green' | 'amber' | 'red' {
+    const days = this.passwordExpiresInDays;
+    if (days === null || days > 14) return 'green';
+    return days <= 0 ? 'red' : 'amber';
   }
 
   get confirmMatches(): boolean {

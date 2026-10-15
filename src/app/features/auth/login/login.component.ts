@@ -95,14 +95,6 @@ export class LoginComponent {
     this.capsLockOn = event.getModifierState?.('CapsLock') ?? false;
   }
 
-  fillDemoCredentials(): void {
-    this.form.patchValue({
-      username: 'superadmin@onehostel.com',
-      password: 'Password123!',
-    });
-    this.form.markAsPristine();
-  }
-
   // ---- Password -------------------------------------------------------------
 
   onSubmit(): void {

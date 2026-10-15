@@ -88,7 +88,7 @@
             <app-step-facilities [formGroup]="facilitiesGroup"></app-step-facilities>
           </mat-step>
 
-          <mat-step [stepControl]="adminGroup" label="Hostel Admin">
+          <mat-step [stepControl]="adminGroup" label="Hostel Owner">
             <app-step-admin [formGroup]="adminGroup" (regenerate)="regeneratePassword()"></app-step-admin>
           </mat-step>
 
@@ -117,7 +117,7 @@
           <strong>{{ createdHostelId }}</strong>
         </div>
         <div class="wizard-success__row">
-          <span>Admin Username</span>
+          <span>Hostel Owner Username</span>
           <strong>{{ formValue.admin.username }}</strong>
         </div>
         <div class="wizard-success__row">

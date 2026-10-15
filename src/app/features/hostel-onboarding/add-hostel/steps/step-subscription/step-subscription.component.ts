@@ -53,8 +53,8 @@ import { PLAN_DETAILS, PlanName } from '../../plan-details';
 
       <div class="plan-summary step-grid__full">
         <div class="plan-summary__row">
-          <span>Resident Limit</span>
-          <strong>{{ planDetail.residentLimit }} residents</strong>
+          <span>Tenant Limit</span>
+          <strong>{{ planDetail.residentLimit }} tenants</strong>
         </div>
         <div class="plan-summary__row plan-summary__row--features">
           <span>Enabled Features</span>
