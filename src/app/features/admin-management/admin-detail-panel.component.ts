@@ -12,7 +12,7 @@ import { HostelAdmin, LogoutType, adminFullName, formatDuration, sessionMinutes 
 import { COUNTRY_OPTIONS } from '../../core/models/system-settings.models';
 import { ADMIN_ACTION_META, AdminAction, AdminService, availableActions } from './admin.service';
 import { AuditLogService } from '../../core/services/audit-log.service';
-import { auditAction } from '../../core/models/audit.models';
+import { auditAction, auditEventLabel } from '../../core/models/audit.models';
 import { REPORT_HOSTELS } from '../reports/report.models';
 import { AppDatePipe } from '../../shared/pipes/app-date.pipe';
 
@@ -39,7 +39,7 @@ interface ActivityItem {
 const LOGOUT_TITLES: Record<LogoutType, string> = {
   Manual: 'Signed out',
   'Session timeout': 'Signed out — session timed out',
-  'Ended by SuperAdmin': 'Signed out by SuperAdmin',
+  'Ended by SuperAdmin': 'Signed out by Admin',
 };
 
 interface ActivityDay {
@@ -145,7 +145,7 @@ interface ActivityDay {
                 <div class="info-card__content">
                   <h3 class="info-card__title">Personal</h3>
                   <dl class="detail-grid detail-grid--single">
-                    <div><dt>Admin ID</dt><dd>{{ a.adminId }}</dd></div>
+                    <div><dt>Hostel Owner ID</dt><dd>{{ a.adminId }}</dd></div>
                     <div><dt>Name</dt><dd>{{ name(a) }}</dd></div>
                     <div><dt>Email</dt><dd><a [href]="'mailto:' + a.email">{{ a.email }}</a></dd></div>
                     <div><dt>Mobile</dt><dd>{{ a.mobileCode }} {{ a.mobile }}</dd></div>
@@ -1319,7 +1319,7 @@ export class AdminDetailPanelComponent implements OnChanges {
     return Math.floor((Date.now() - new Date(since).getTime()) / 86_400_000);
   }
 
-  /** Sign-ins from the admin's login history merged with SuperAdmin actions on the account. */
+  /** Sign-ins from the admin's login history merged with Admin actions on the account. */
   get activity(): ActivityItem[] {
     const a = this.admin;
     if (!a) return [];
@@ -1358,7 +1358,7 @@ export class AdminDetailPanelComponent implements OnChanges {
             auditAction(l)
           ] ?? 'lock_reset',
         tone: l.status === 'Failed' ? 'danger' : ['Lock', 'Deactivate'].includes(auditAction(l)) ? 'warning' : 'info',
-        title: `${l.event}${l.status === 'Failed' ? ' (failed)' : ''}`,
+        title: `${auditEventLabel(l.event)}${l.status === 'Failed' ? ' (failed)' : ''}`,
         by: l.user,
         changes: l.changes?.map((c) => `${c.field}: ${c.oldValue} → ${c.newValue}`),
       }));

@@ -9,16 +9,16 @@ export type PlanName = 'Basic' | 'Standard' | 'Premium';
 export const PLAN_DETAILS: Record<PlanName, PlanDetail> = {
   Basic: {
     residentLimit: 50,
-    features: ['Resident Management', 'Basic Reports'],
+    features: ['Tenant Management', 'Basic Reports'],
   },
   Standard: {
     residentLimit: 150,
-    features: ['Resident Management', 'Basic Reports', 'Advanced Reports', 'SMS Notifications'],
+    features: ['Tenant Management', 'Basic Reports', 'Advanced Reports', 'SMS Notifications'],
   },
   Premium: {
     residentLimit: 500,
     features: [
-      'Resident Management',
+      'Tenant Management',
       'Basic Reports',
       'Advanced Reports',
       'SMS Notifications',

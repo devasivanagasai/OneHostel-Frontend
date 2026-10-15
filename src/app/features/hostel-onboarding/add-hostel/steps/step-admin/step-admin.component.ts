@@ -73,9 +73,9 @@ import { LOGIN_METHOD_OPTIONS } from '../../../../../core/models/auth.models';
         <app-form-error [control]="formGroup.get('loginMethod')" label="Login method"></app-form-error>
         <p class="field-hint">
           @if (isOtp) {
-            The admin logs in with a one-time code sent to their mobile number or email. Code length and expiry come from System Defaults → Security.
+            The hostel owner logs in with a one-time code sent to their mobile number or email. Code length and expiry come from System Defaults → Security.
           } @else {
-            The admin logs in with their username, email or mobile number and a password.
+            The hostel owner logs in with their username, email or mobile number and a password.
           }
         </p>
       </div>
@@ -96,7 +96,7 @@ import { LOGIN_METHOD_OPTIONS } from '../../../../../core/models/auth.models';
       <div class="field-group">
         <label class="field-label">Role</label>
         <mat-form-field appearance="outline">
-          <input matInput value="Admin" readonly />
+          <input matInput value="Hostel Owner" readonly />
         </mat-form-field>
       </div>
     </div>

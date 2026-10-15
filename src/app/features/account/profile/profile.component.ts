@@ -12,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AccountService } from '../../../core/services/account.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { MOBILE_CODES, UserProfile, profileFullName, profileInitials } from '../../../core/models/account.models';
 import { UnsavedChangesAware } from '../../../core/guards/unsaved-changes.guard';
 import { ConfirmDialogService } from '../../../shared/services/confirm-dialog.service';
@@ -44,6 +45,7 @@ export class ProfileComponent implements UnsavedChangesAware {
 
   private readonly fb = inject(FormBuilder);
   private readonly account = inject(AccountService);
+  private readonly auth = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly destroyRef = inject(DestroyRef);
@@ -84,6 +86,11 @@ export class ProfileComponent implements UnsavedChangesAware {
 
   get initials(): string {
     return profileInitials(this.preview);
+  }
+
+  /** When you last signed in on this browser. */
+  get lastLoginAt(): string | null {
+    return this.auth.lastLoginAt;
   }
 
   get passwordAgeDays(): number {

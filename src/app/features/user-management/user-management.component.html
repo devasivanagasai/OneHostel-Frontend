@@ -64,7 +64,7 @@
     </div>
   </div>
 
-  <!-- One card per onboarded hostel: its Admins and Residents together -->
+  <!-- One card per onboarded hostel: its Hostel Owners and Tenants together -->
   @if (groups.length) {
     <div class="groups">
       @for (g of groups; track g.hostel) {
@@ -75,9 +75,9 @@
             <span class="group-card__text">
               <span class="group-card__title">{{ g.hostel }}</span>
               <span class="group-card__meta">
-                {{ g.admins }} {{ g.admins === 1 ? 'Admin' : 'Admins' }}
+                {{ g.admins }} {{ g.admins === 1 ? 'Hostel Owner' : 'Hostel Owners' }}
                 <span class="group-card__dot" aria-hidden="true"></span>
-                {{ g.residents }} {{ g.residents === 1 ? 'Resident' : 'Residents' }}
+                {{ g.residents }} {{ g.residents === 1 ? 'Tenant' : 'Tenants' }}
                 <span class="group-card__dot" aria-hidden="true"></span>
                 {{ g.total }} {{ g.total === 1 ? 'record' : 'records' }}
               </span>
@@ -105,7 +105,7 @@
                       <td class="font-semibold">{{ u.id }}</td>
                       <td class="font-medium">{{ u.name }}</td>
                       <td>
-                        <span class="role-chip" [class.role-chip--admin]="u.role === 'Admin'">{{ u.role }}</span>
+                        <span class="role-chip" [class.role-chip--admin]="u.role === 'Hostel Owner'">{{ u.role }}</span>
                       </td>
                       <td>
                         @if (u.roomBed) {
@@ -124,7 +124,7 @@
                       <td><span class="status-badge status-badge--{{ u.tone }}">{{ u.status }}</span></td>
                       <td class="actions-cell">
                         <span class="row-icons">
-                          @if (u.role === 'Admin') {
+                          @if (u.role === 'Hostel Owner') {
                             <button type="button" class="row-edit-btn" matTooltip="Edit" [attr.aria-label]="'Edit ' + u.name" (click)="edit(u)">
                               <mat-icon>edit</mat-icon>
                             </button>
@@ -165,7 +165,7 @@
       <app-empty-state
         [icon]="hasFilters ? 'search_off' : 'group'"
         [message]="hasFilters ? 'No users match your filters' : 'No users yet'"
-        [hint]="hasFilters ? 'Try a different search, hostel, role or status, or clear the filters.' : 'Admins and residents of onboarded hostels appear here.'"
+        [hint]="hasFilters ? 'Try a different search, hostel, role or status, or clear the filters.' : 'Hostel owners and tenants of onboarded hostels appear here.'"
         [clearable]="hasFilters"
         (clear)="resetFilters()"
       ></app-empty-state>

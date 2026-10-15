@@ -54,7 +54,7 @@ const todayIso = (): string => {
  * never create a new subscription ID — they settle the pending payment or renew
  * the same subscription.
  *
- * There is no manual "Record Payment" action in the SuperAdmin UI — payments are
+ * There is no manual "Record Payment" action in the Admin UI — payments are
  * made by the hostel. `recordPayment` is the single entry point for a completed
  * payment (e.g. the payment-gateway callback / webhook once the backend exists);
  * calling it updates Payment History, both tables and the totals at once.

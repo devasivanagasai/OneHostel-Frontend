@@ -90,8 +90,8 @@ export class AddHostelComponent implements OnInit {
     { label: 'Hostel Information', hint: 'Name, type and contact details', icon: 'apartment' },
     { label: 'Address', hint: 'Where the hostel is located', icon: 'place' },
     { label: 'Hostel Capacity', hint: 'Buildings, rooms and beds', icon: 'bed' },
-    { label: 'Facilities', hint: 'Amenities for residents', icon: 'room_service' },
-    { label: 'Hostel Admin', hint: 'Who manages the hostel', icon: 'admin_panel_settings' },
+    { label: 'Facilities', hint: 'Amenities for tenants', icon: 'room_service' },
+    { label: 'Hostel Owner', hint: 'Who manages the hostel', icon: 'admin_panel_settings' },
     { label: 'Subscription', hint: 'Plan and billing', icon: 'credit_card' },
     { label: 'Confirmation', hint: 'Review and submit', icon: 'fact_check' },
   ];
@@ -283,7 +283,7 @@ export class AddHostelComponent implements OnInit {
       details: `${v.hostelInfo.hostelType} in ${v.address.city} · ${v.capacity.totalBeds} beds · ${v.subscription.plan} plan`,
     });
     this.auditLog.record('Create Admin', v.admin.username ?? '', {
-      details: `Admin for ${hostelName}. Logs in with ${v.admin.loginMethod === 'OTP' ? 'OTP' : 'password'}. Credentials sent by ${[
+      details: `Hostel owner for ${hostelName}. Logs in with ${v.admin.loginMethod === 'OTP' ? 'OTP' : 'password'}. Credentials sent by ${[
         v.admin.sendEmail ? 'email' : '',
         v.admin.sendSms ? 'SMS' : '',
       ]
@@ -372,7 +372,7 @@ export class AddHostelComponent implements OnInit {
   }
 
   onSendCredentials(): void {
-    this.snackBar.open('Credentials sent to the admin.', 'Dismiss', { duration: 3000 });
+    this.snackBar.open('Credentials sent to the hostel owner.', 'Dismiss', { duration: 3000 });
   }
 
   onBackToList(): void {

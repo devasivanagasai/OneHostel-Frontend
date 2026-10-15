@@ -337,62 +337,6 @@ $primary-dark: #2563eb; // accents (tabs, links, focus) use the same electric bl
   }
 }
 
-// "or" between two lines.
-.login-form__divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 18px 0;
-  font-size: 13px;
-  color: #64748b;
-
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: $border;
-  }
-
-
-}
-
-// Secondary action: outlined in the brand blue.
-.login-form__demo {
-  padding: 0 var(--btn-padding-x);
-  width: 100%;
-  height: var(--btn-height-lg);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  border: 1.5px solid #93b4f5;
-  border-radius: var(--btn-radius);
-  background: #ffffff;
-  color: $primary;
-  font-family: inherit;
-  font-size: var(--btn-font-size);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-
-  &:hover {
-    background: #eff6ff;
-    border-color: $primary-dark;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $primary-dark;
-    outline-offset: 2px;
-  }
-}
-
 // Shown after an automatic sign-out (Session Timeout)
 .login-notice {
   display: flex;

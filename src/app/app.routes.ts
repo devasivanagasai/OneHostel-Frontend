@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { authGuard, guestGuard } from './core/guards/auth.guard';
 import { unsavedChangesGuard } from './core/guards/unsaved-changes.guard';
 import { passwordExpiryGuard } from './core/guards/password-expiry.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -14,7 +15,8 @@ export const routes: Routes = [
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
-    canActivateChild: [passwordExpiryGuard],
+    // Password expiry first, then the Admin-only modules (Hostel Owners and Tenants get the Dashboard).
+    canActivateChild: [passwordExpiryGuard, adminGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -50,7 +52,8 @@ export const routes: Routes = [
             (m) => m.SubscriptionPlansComponent,
           ),
       },
-      // Admin Management: hostel Admins and Residents. "/users" was its address for a while; keep it working.
+      // Admin Management: Hostel Owners and Tenants.
+      // "/users" was its address for a while; keep it working.
       { path: 'users', redirectTo: 'admins', pathMatch: 'full' },
       {
         path: 'admins',

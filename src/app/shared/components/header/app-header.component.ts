@@ -15,6 +15,7 @@ import {
   MatAutocompleteTrigger,
 } from '@angular/material/autocomplete';
 import { AppNotification, NotificationService, relativeTime } from '../../../core/services/notification.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface AppUser {
   name: string;
@@ -85,9 +86,9 @@ export class AppHeaderComponent {
   /** Emits the route to navigate to when a global-search result is selected. */
   @Output() navigateTo = new EventEmitter<string>();
 
-  /** Up to two initials for the profile menu avatar, e.g. "Super Admin" → "SA". */
+  /** Up to two initials for the profile menu avatar, e.g. "Admin User" → "AU". */
   get initials(): string {
-    const parts = (this.user?.name || 'Super Admin').trim().split(/\s+/);
+    const parts = (this.user?.name || 'Admin').trim().split(/\s+/);
     return ((parts[0]?.[0] ?? '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
   }
 
@@ -97,16 +98,21 @@ export class AppHeaderComponent {
   readonly searchControl = new FormControl('', { nonNullable: true });
   searchFocused = false;
 
-  private readonly searchItems: SearchableItem[] = [
+  /** Search results: only pages the signed-in user may open (Admin modules are Admin-only). */
+  private get searchItems(): SearchableItem[] {
+    return this.allSearchItems.filter((i) => this.auth.canAccess(i.route));
+  }
+
+  private readonly allSearchItems: SearchableItem[] = [
     // Quick actions
-    { label: 'Onboard New Hostel', route: '/hostel-onboarding/new', icon: 'domain_add', group: 'Quick Actions', description: 'Add a hostel and its admin', keywords: ['add', 'create', 'new hostel'] },
+    { label: 'Onboard New Hostel', route: '/hostel-onboarding/new', icon: 'domain_add', group: 'Quick Actions', description: 'Add a hostel and its owner', keywords: ['add', 'create', 'new hostel'] },
     { label: 'Create Template', route: '/communication-templates/new', icon: 'post_add', group: 'Quick Actions', description: 'New email, SMS or push template', keywords: ['add', 'new template', 'message'] },
     // Pages
     { label: 'Dashboard', route: '/dashboard', icon: 'home', group: 'Pages', description: 'Overview and key metrics', keywords: ['home', 'overview', 'stats'] },
     { label: 'Onboard Hostel', route: '/hostel-onboarding', icon: 'apartment', group: 'Pages', description: 'All onboarded hostels', keywords: ['hostels', 'institution', 'property'] },
     { label: 'Subscription Plans', route: '/subscription-plans', icon: 'credit_card', group: 'Pages', description: 'Pricing plans and features', keywords: ['pricing', 'plans', 'features'] },
     { label: 'Communication Templates', route: '/communication-templates', icon: 'campaign', group: 'Pages', description: 'Email, SMS and push messages', keywords: ['email', 'sms', 'push', 'notification', 'message'] },
-    { label: 'Admin Management', route: '/admins', icon: 'manage_accounts', group: 'Pages', description: 'Hostel admins and residents', keywords: ['users', 'residents', 'students', 'admins', 'user management', 'block', 'lock', 'unlock', 'reset'] },
+    { label: 'Admin Management', route: '/admins', icon: 'manage_accounts', group: 'Pages', description: 'Hostel owners and tenants', keywords: ['users', 'owners', 'tenants', 'residents', 'students', 'admins', 'user management', 'block', 'lock', 'unlock', 'reset'] },
     { label: 'Subscription & Payment', route: '/subscription-payments', icon: 'payments', group: 'Pages', description: 'Billing, invoices and renewals', keywords: ['billing', 'invoice', 'renewal', 'payment'] },
     { label: 'Reports', route: '/reports', icon: 'bar_chart', group: 'Pages', description: 'Analytics and exports', keywords: ['analytics', 'export', 'charts'] },
     { label: 'Audit Logs', route: '/audit-logs', icon: 'assignment', group: 'Pages', description: 'Who changed what, and when', keywords: ['logs', 'history', 'activity', 'audit'] },
@@ -120,6 +126,7 @@ export class AppHeaderComponent {
 
   /** Shared with the dashboard's Recent Notifications card. */
   private readonly notificationService = inject(NotificationService);
+  private readonly auth = inject(AuthService);
   readonly relativeTime = relativeTime;
 
   get notifications(): AppNotification[] {

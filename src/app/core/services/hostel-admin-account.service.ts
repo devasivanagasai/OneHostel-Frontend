@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { LoginMethod } from '../models/auth.models';
+import { BUILT_IN_HOSTEL_OWNER } from '../models/built-in-accounts';
 
 const STORAGE_KEY = 'onehostel_hostel_admins';
 
@@ -18,7 +19,7 @@ export interface HostelAdminAccount {
   passwordChangedAt?: string;
   /** Failed logins in a row (password or OTP); reset on a successful login. */
   failedAttempts?: number;
-  /** Set while the account is locked; login is refused until a SuperAdmin unlocks it. */
+  /** Set while the account is locked; login is refused until a Admin unlocks it. */
   lockedAt?: string;
   lockReason?: string;
 }
@@ -136,12 +137,18 @@ export class HostelAdminAccountService {
     }
   }
 
+  /** Saved accounts, plus the built-in Hostel Owner sign-in until it has been saved itself. */
   private readAll(): HostelAdminAccount[] {
+    let accounts: HostelAdminAccount[] = [];
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as HostelAdminAccount[]) : [];
+      accounts = raw ? (JSON.parse(raw) as HostelAdminAccount[]) : [];
     } catch {
-      return [];
+      accounts = [];
     }
+    if (!accounts.some((a) => a.hostelId === BUILT_IN_HOSTEL_OWNER.hostelId)) {
+      accounts.push({ ...BUILT_IN_HOSTEL_OWNER, passwordChangedAt: new Date().toISOString() });
+    }
+    return accounts;
   }
 }

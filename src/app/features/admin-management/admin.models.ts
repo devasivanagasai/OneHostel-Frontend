@@ -2,10 +2,10 @@ export type AdminStatus = 'Active' | 'Inactive' | 'Locked';
 
 export const ADMIN_STATUSES: AdminStatus[] = ['Active', 'Inactive', 'Locked'];
 
-/** Platform roles: SuperAdmin (OneHostel member), Admin (onboarded hostel member), Resident (onboarded resident). */
-export type AdminRole = 'Admin';
+/** Platform roles: Admin (OneHostel member), Hostel Owner (onboarded hostel member), Tenant (onboarded tenant). */
+export type AdminRole = 'Hostel Owner';
 
-export const ADMIN_ROLES: AdminRole[] = ['Admin'];
+export const ADMIN_ROLES: AdminRole[] = ['Hostel Owner'];
 
 export type LogoutType = 'Manual' | 'Session timeout' | 'Ended by SuperAdmin';
 
@@ -130,7 +130,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9876543210',
     username: 'rakesh.verma',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Active',
     hostelId: 'HST-1001',
     hostelName: 'Grand Stay Hostel',
@@ -147,7 +147,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9845012345',
     username: 'anish.kumar',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Active',
     hostelId: 'HST-1002',
     hostelName: 'Royal Palms Luxury Hostel',
@@ -164,7 +164,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9884098840',
     username: 'suresh.raina',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Locked',
     hostelId: 'HST-1003',
     hostelName: 'City Center PG & Hostel',
@@ -191,7 +191,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9000011122',
     username: 'meera.iyer',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Active',
     hostelId: 'HST-1004',
     hostelName: 'Green Valley Girls Hostel',
@@ -206,7 +206,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9822012345',
     username: 'vikram.joshi',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Inactive',
     hostelId: 'HST-1005',
     hostelName: 'Lakeview Residency',
@@ -223,7 +223,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9123456780',
     username: 'admin123',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Active',
     hostelId: 'HST-1006',
     hostelName: 'ABC Hostel',
@@ -240,7 +240,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9900112233',
     username: 'farhan.ali',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Inactive',
     hostelId: 'HST-1007',
     hostelName: 'Metro Stay PG',
@@ -257,7 +257,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9811122233',
     username: 'kiran.rao',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Inactive',
     hostelId: 'HST-1008',
     hostelName: 'Sunrise Boys Hostel',
@@ -274,7 +274,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9745098765',
     username: 'divya.menon',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Active',
     hostelId: 'HST-1001',
     hostelName: 'Grand Stay Hostel',
@@ -291,7 +291,7 @@ export const MOCK_ADMINS: HostelAdmin[] = [
     mobileCode: '+91',
     mobile: '9959012345',
     username: 'arjun.reddy',
-    role: 'Admin',
+    role: 'Hostel Owner',
     status: 'Active',
     hostelId: 'HST-1002',
     hostelName: 'Royal Palms Luxury Hostel',

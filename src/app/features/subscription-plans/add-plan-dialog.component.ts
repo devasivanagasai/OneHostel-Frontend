@@ -24,7 +24,7 @@ export interface FeatureItem {
 }
 
 export const FEATURE_CONFIG_ITEMS: FeatureItem[] = [
-  { id: 'residentManagement', name: 'Resident Management', icon: 'people' },
+  { id: 'residentManagement', name: 'Tenant Management', icon: 'people' },
   { id: 'roomManagement', name: 'Room Management', icon: 'meeting_room' },
   { id: 'payments', name: 'Payments', icon: 'payments' },
   { id: 'complaints', name: 'Complaints', icon: 'report_problem' },
@@ -135,15 +135,15 @@ export const FEATURE_CONFIG_ITEMS: FeatureItem[] = [
               </mat-form-field>
             </div>
 
-            <!-- Resident Limit -->
+            <!-- Tenant Limit -->
             <div class="field-group">
               <label class="field-label">
-                Resident Limit <span class="required-star">*</span>
+                Tenant Limit <span class="required-star">*</span>
               </label>
               <mat-form-field appearance="outline" class="full-width">
                 <input matInput type="number" formControlName="residentLimit" placeholder="e.g. 150" />
                 <mat-error *ngIf="planForm.get('residentLimit')?.hasError('required')">
-                  Resident limit is required
+                  Tenant limit is required
                 </mat-error>
                 <mat-error *ngIf="planForm.get('residentLimit')?.hasError('min')">
                   Limit must be 1 or higher

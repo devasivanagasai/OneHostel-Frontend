@@ -61,10 +61,10 @@ export class MainLayoutComponent {
         this.pageSubtitle = 'View and update your personal details';
       } else if (url.includes('hostel-onboarding/new')) {
         this.pageTitle = 'Onboard New Hostel';
-        this.pageSubtitle = 'Complete all 7 steps to add a new hostel and its admin to the platform.';
+        this.pageSubtitle = 'Complete all 7 steps to add a new hostel and its owner to the platform.';
       } else if (url.includes('hostel-onboarding') && url.includes('/edit')) {
         this.pageTitle = 'Edit Hostel';
-        this.pageSubtitle = 'Update this hostel and its admin details across all 7 steps.';
+        this.pageSubtitle = 'Update this hostel and its owner details across all 7 steps.';
       } else if (url.includes('dashboard')) {
         this.pageTitle = 'Dashboard';
       } else if (url.includes('hostel-onboarding')) {
@@ -90,7 +90,7 @@ export class MainLayoutComponent {
         this.pageTitle = 'Institution';
       } else if (url.startsWith('/admins')) {
         this.pageTitle = 'Admin Management';
-        this.pageSubtitle = 'Manage hostel admins and residents across all onboarded hostels';
+        this.pageSubtitle = 'Manage hostel owners and tenants across all onboarded hostels';
       } else if (url.includes('reports')) {
         this.pageTitle = 'Reports';
       } else if (url.includes('audit-logs')) {

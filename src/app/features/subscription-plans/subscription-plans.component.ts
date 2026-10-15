@@ -20,7 +20,7 @@ const PLAN_AUDIT_FIELDS: Record<string, string> = {
   planName: 'Plan Name',
   price: 'Price',
   billingCycle: 'Billing Cycle',
-  residentLimit: 'Resident Limit',
+  residentLimit: 'Tenant Limit',
   features: 'Enabled Features',
 };
 
@@ -143,7 +143,7 @@ const VISIBLE_FEATURES = 4;
               <ul class="plan-card__limits">
                 <li>
                   <span class="plan-card__limit-icon"><mat-icon fontSet="material-icons-outlined">group</mat-icon></span>
-                  Up to {{ plan.residentLimit | number }} Residents
+                  Up to {{ plan.residentLimit | number }} Tenants
                 </li>
                 <li>
                   <span class="plan-card__limit-icon"><mat-icon fontSet="material-icons-outlined">view_in_ar</mat-icon></span>
@@ -795,7 +795,7 @@ export class SubscriptionPlansComponent {
     if (this.panelMode === 'add') {
       this.rows = [result, ...this.rows];
       this.auditLog.record('Create Plan', result.planName, {
-        details: `${result.price} · ${result.billingCycle} · ${result.residentLimit} residents`,
+        details: `${result.price} · ${result.billingCycle} · ${result.residentLimit} tenants`,
       });
       this.snackBar.open('Subscription Plan created successfully', 'x', {
         duration: 4000,

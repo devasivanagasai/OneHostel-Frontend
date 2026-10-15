@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { shouldCloseOnEscape } from '../../shared/utils/panel-escape';
 import { AuditLogService } from '../../core/services/audit-log.service';
-import { auditAction } from '../../core/models/audit.models';
+import { auditAction, auditEventLabel } from '../../core/models/audit.models';
 import { LogoutType, formatDuration, sessionMinutes } from '../admin-management/admin.models';
 import { Resident, residentAuditEntity, residentFullName } from './resident.models';
 import { RESIDENT_ACTION_META, ResidentAction, ResidentService, residentActions } from './resident.service';
@@ -47,7 +47,7 @@ interface ActivityDay {
 const LOGOUT_TITLES: Record<LogoutType, string> = {
   Manual: 'Signed out',
   'Session timeout': 'Signed out — session timed out',
-  'Ended by SuperAdmin': 'Signed out by SuperAdmin',
+  'Ended by SuperAdmin': 'Signed out by Admin',
 };
 
 const ACCOUNT_ICONS: Record<string, string> = {
@@ -130,7 +130,7 @@ export class ResidentDetailPanelComponent implements OnChanges {
 
   // ---- Activity ----------------------------------------------------------------
 
-  /** Resident-app sign-ins and sign-outs merged with SuperAdmin actions on the account, newest first. */
+  /** Resident-app sign-ins and sign-outs merged with Admin actions on the account, newest first. */
   get activity(): ActivityItem[] {
     const r = this.resident;
     if (!r) return [];
@@ -169,7 +169,7 @@ export class ResidentDetailPanelComponent implements OnChanges {
           kind: 'account',
           icon: ACCOUNT_ICONS[action] ?? 'edit',
           tone: l.status === 'Failed' ? 'danger' : ['Block', 'Deactivate'].includes(action) ? 'warning' : 'info',
-          title: `${l.event}${l.status === 'Failed' ? ' (failed)' : ''}`,
+          title: `${auditEventLabel(l.event)}${l.status === 'Failed' ? ' (failed)' : ''}`,
           by: l.user,
           changes: l.changes?.map((c) => `${c.field}: ${c.oldValue} → ${c.newValue}`),
         };
