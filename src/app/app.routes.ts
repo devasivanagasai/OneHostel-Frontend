@@ -25,6 +25,23 @@ export const routes: Routes = [
           import('./features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
+        path: 'rooms',
+        loadComponent: () =>
+          import('./features/rooms-management/rooms-management.component').then(
+            (m) => m.RoomsManagementComponent,
+          ),
+      },
+      {
+        path: 'residents',
+        loadComponent: () =>
+          import('./features/residents/residents.component').then((m) => m.ResidentsComponent),
+      },
+      {
+        path: 'fees',
+        loadComponent: () =>
+          import('./features/fees-payments/fees-payments.component').then((m) => m.FeesPaymentsComponent),
+      },
+      {
         path: 'hostel-onboarding',
         loadComponent: () =>
           import('./features/hostel-onboarding/hostel-onboarding.component').then(

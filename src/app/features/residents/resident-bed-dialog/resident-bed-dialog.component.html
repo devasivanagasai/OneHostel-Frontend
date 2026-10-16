@@ -1,0 +1,97 @@
+<div class="rb">
+  <header class="rb__header">
+    <div class="rb__title">
+      <span [class.rb__icon--warn]="data.mode === 'checkout'"><mat-icon>{{ meta.icon }}</mat-icon></span>
+      <div>
+        <h2>{{ meta.title }}</h2>
+        <p>{{ name }} · {{ data.resident.residentId }}</p>
+      </div>
+    </div>
+    <button mat-icon-button type="button" (click)="cancel()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <mat-dialog-content class="rb__content">
+      @if (data.mode !== 'allocate') {
+        <div class="rb__current">
+          <span class="rb__current-label">Current bed</span>
+          <strong>{{ current ? currentLabel : 'No bed allocated' }}</strong>
+          @if (current) {
+            <span class="rb__current-sub">{{ current.room.building }} · {{ current.room.floor }} · since {{ fmt.date(current.bed.joinedDate) }}</span>
+          }
+        </div>
+      }
+
+      @if (data.mode === 'checkout') {
+        @if (data.resident.outstandingBalance > 0) {
+          <p class="rb__warn">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <span>Outstanding balance of <strong>₹{{ data.resident.outstandingBalance | number }}</strong>. Settle it before or after check-out as per policy.</span>
+          </p>
+        }
+        <p class="rb__info">
+          <mat-icon>info</mat-icon>
+          <span>The allocation is closed and the bed becomes available from the check-out date. Resident history is kept.</span>
+        </p>
+      } @else {
+        @if (rooms.length === 0) {
+          <p class="rb__warn"><mat-icon>bed</mat-icon><span>No available beds match this resident right now.</span></p>
+        } @else {
+          <p class="rb__info"><mat-icon>filter_alt</mat-icon><span>{{ restrictionNote }}</span></p>
+          <div class="rb__grid">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ data.mode === 'transfer' ? 'New room' : 'Room' }}</mat-label>
+              <mat-select formControlName="roomId" (selectionChange)="onRoomPicked()" required>
+                @for (room of rooms; track room.id) {
+                  <mat-option [value]="room.id">
+                    Room {{ room.roomNumber }} · {{ room.floor }} · {{ room.roomType }}
+                  </mat-option>
+                }
+              </mat-select>
+              @if (form.controls.roomId.touched && form.controls.roomId.invalid) { <mat-error>Select a room</mat-error> }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Bed</mat-label>
+              <mat-select formControlName="bedId" required [placeholder]="form.value.roomId ? 'Select a bed' : 'Pick a room first'">
+                @for (bed of beds; track bed.id) {
+                  <mat-option [value]="bed.id">Bed {{ bed.bedNumber }} · ₹{{ bed.monthlyRent | number }}/mo</mat-option>
+                }
+              </mat-select>
+              @if (form.controls.bedId.touched && form.controls.bedId.invalid) { <mat-error>Select a bed</mat-error> }
+            </mat-form-field>
+          </div>
+        }
+      }
+
+      <div class="rb__grid">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ data.mode === 'checkout' ? 'Check-out date' : data.mode === 'transfer' ? 'Effective date' : 'Allocation start date' }}</mat-label>
+          <input matInput type="date" formControlName="date" [min]="minDate" required />
+          @if (dateTooEarly) {
+            <mat-hint class="rb__error">Can't be before {{ fmt.date(minDate) }}</mat-hint>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="rb__full">
+        <mat-label>{{ data.mode === 'checkout' ? 'Remarks' : data.mode === 'transfer' ? 'Reason' : 'Notes' }}</mat-label>
+        <textarea matInput formControlName="notes" rows="2" maxlength="250"></textarea>
+      </mat-form-field>
+    </mat-dialog-content>
+
+    <footer class="rb__footer">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button
+        mat-flat-button
+        [color]="data.mode === 'checkout' ? 'warn' : 'primary'"
+        type="submit"
+        [disabled]="data.mode !== 'checkout' && rooms.length === 0"
+      >
+        {{ meta.submit }}
+      </button>
+    </footer>
+  </form>
+</div>

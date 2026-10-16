@@ -32,11 +32,11 @@ export class SidebarComponent {
 
   /** Menu for the signed-in user: the Admin modules are shown to Admins only. */
   get navSections(): NavSection[] {
-    // Built once per role and reused: a fresh array on every check would re-create the menu links,
+    // Built once per role combination and reused: a fresh array on every check would re-create the menu links,
     // and each new routerLinkActive schedules another check — an endless render loop (white screen).
-    const isAdmin = this.auth.isAdmin;
-    if (!this.cachedSections || this.cachedForAdmin !== isAdmin) {
-      this.cachedForAdmin = isAdmin;
+    const cacheKey = `${this.auth.isAdmin}_${this.auth.isHostelOwner}_${this.auth.isTenant}`;
+    if (!this.cachedSections || this.cachedRoleKey !== cacheKey) {
+      this.cachedRoleKey = cacheKey;
       this.cachedSections = ALL_SECTIONS.map((section) => ({
         ...section,
         items: section.items.filter((item) => this.auth.canAccess(item.route)),
@@ -46,13 +46,16 @@ export class SidebarComponent {
   }
 
   private cachedSections?: NavSection[];
-  private cachedForAdmin?: boolean;
+  private cachedRoleKey?: string;
 }
 
 const ALL_SECTIONS: NavSection[] = [
   {
     items: [
       { label: 'Dashboard', icon: 'home', route: '/dashboard' },
+      { label: 'Rooms & Beds', icon: 'meeting_room', route: '/rooms' },
+      { label: 'Residents', icon: 'groups', route: '/residents' },
+      { label: 'Fees & Payments', icon: 'payments', route: '/fees' },
       { label: 'Onboard Hostel', icon: 'apartment', route: '/hostel-onboarding' },
       { label: 'Subscription Plans', icon: 'credit_card', route: '/subscription-plans' },
       { label: 'Communication Templates', icon: 'campaign', route: '/communication-templates' },

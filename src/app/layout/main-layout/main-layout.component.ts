@@ -67,6 +67,15 @@ export class MainLayoutComponent {
         this.pageSubtitle = 'Update this hostel and its owner details across all 7 steps.';
       } else if (url.includes('dashboard')) {
         this.pageTitle = 'Dashboard';
+      } else if (url.startsWith('/fees')) {
+        this.pageTitle = 'Fees & Payments';
+        this.pageSubtitle = 'Configure resident fees, generate charges, record payments and send reminders';
+      } else if (url.includes('residents')) {
+        this.pageTitle = 'Residents';
+        this.pageSubtitle = 'Add residents, allocate beds, send activation invites and manage check-outs';
+      } else if (url.includes('rooms')) {
+        this.pageTitle = 'Rooms & Beds Management';
+        this.pageSubtitle = 'Configure floors, room types, monitor bed allocations, and manage tenant check-ins';
       } else if (url.includes('hostel-onboarding')) {
         this.pageTitle = 'Onboard Hostel';
       } else if (url.includes('subscription-plans')) {
