@@ -1,0 +1,304 @@
+// KPI summary row and filter card shared by the hostel-owner list screens (Rooms & Beds, Residents).
+//
+//   <section class="kpi-row">
+//     <div class="kpi-card"> <span class="kpi-card__icon kpi-card__icon--teal">…</span> <div class="kpi-card__body">…</div> </div>
+//   </section>
+//   <div class="filter-card">
+//     <label class="filter-search">…</label>
+//     <label class="filter-select"><span class="filter-select__control"><select>…</select><mat-icon>expand_more</mat-icon></span></label>
+//     <div class="filter-toggle">…</div>
+//     <button class="filter-card__reset">…</button>
+//     <button class="primary-green-btn filter-card__add">…</button>
+//   </div>
+
+$text: #0f172a;
+$text-2: #475569;
+$muted: #64748b;
+$line: #e8edf3;
+
+@mixin card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+@mixin icon-size($size) {
+  font-size: $size;
+  width: $size;
+  height: $size;
+}
+
+/* ---- KPI row ---- */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+
+  @media (max-width: 1280px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 720px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.kpi-card {
+  @include card;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  border: none;
+  font: inherit;
+  text-align: left;
+  min-width: 0;
+
+  &--action {
+    cursor: pointer;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(15, 34, 74, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.06);
+    }
+
+    &:focus-visible {
+      outline: 2px solid #0d9488;
+      outline-offset: 2px;
+    }
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      @include icon-size(26px);
+    }
+
+    &--teal { background: #e6f7f5; color: #0d9488; }
+    &--blue { background: #eaf1ff; color: #2563eb; }
+    &--indigo { background: #eef0ff; color: #4f46e5; }
+    &--green { background: #e9f9ef; color: #16a34a; }
+    &--orange { background: #fff1e6; color: #ea580c; }
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-2;
+  }
+
+  &__value {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: $text;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__sub {
+    font-size: 12px;
+    color: $muted;
+    margin-top: 2px;
+
+    &--accent {
+      color: #2563eb;
+      font-weight: 600;
+    }
+  }
+
+  &__bar {
+    display: block;
+    height: 4px;
+    margin-top: 8px;
+    border-radius: 4px;
+    background: #eef2f7;
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #4f46e5;
+      transition: width 0.3s ease;
+    }
+  }
+}
+
+/* ---- Filter card ---- */
+.filter-card {
+  @include card;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  padding: 14px 16px;
+  min-width: 0;
+
+  // Primary action (e.g. Add Room) sits at the far right of the card
+  &__add {
+    margin-left: auto;
+  }
+}
+
+.filter-search {
+  flex: 1 1 220px;
+  min-width: 200px;
+  max-width: 300px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 0 14px;
+  border: 1px solid $line;
+  border-radius: 999px;
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+  }
+
+  > mat-icon {
+    @include icon-size(20px);
+    color: $muted;
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    font-size: 13.5px;
+    color: $text;
+
+    &::placeholder {
+      color: #94a3b8;
+    }
+  }
+
+  &__clear {
+    display: flex;
+    padding: 2px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: $muted;
+    cursor: pointer;
+
+    &:hover {
+      background: #f1f5f9;
+    }
+
+    mat-icon {
+      @include icon-size(16px);
+    }
+  }
+}
+
+.filter-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 128px;
+
+  &__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 38px;
+    border: 1px solid $line;
+    border-radius: 10px;
+    background: #ffffff;
+
+    &:focus-within {
+      border-color: #0d9488;
+    }
+
+    select {
+      appearance: none;
+      width: 100%;
+      height: 100%;
+      padding: 0 30px 0 12px;
+      border: none;
+      outline: none;
+      background: transparent;
+      font: inherit;
+      font-size: 13px;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    mat-icon {
+      position: absolute;
+      right: 8px;
+      pointer-events: none;
+      @include icon-size(18px);
+      color: $muted;
+    }
+  }
+}
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.filter-card__reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 38px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #dc2626;
+  cursor: pointer;
+
+  &:hover {
+    background: #fef2f2;
+  }
+
+  mat-icon {
+    @include icon-size(18px);
+  }
+}
+
+// KPI card used as a quick filter that is currently applied
+.kpi-card--action.is-active {
+  box-shadow: 0 0 0 2px #0d9488;
+}
+
+/* ---- Row / card action menus (rendered in the overlay, so global) ---- */
+.mat-mdc-menu-item.menu-item--danger,
+.mat-mdc-menu-item.menu-item--danger .mat-icon {
+  color: #dc2626;
+}

@@ -109,6 +109,9 @@ export class AppHeaderComponent {
     { label: 'Create Template', route: '/communication-templates/new', icon: 'post_add', group: 'Quick Actions', description: 'New email, SMS or push template', keywords: ['add', 'new template', 'message'] },
     // Pages
     { label: 'Dashboard', route: '/dashboard', icon: 'home', group: 'Pages', description: 'Overview and key metrics', keywords: ['home', 'overview', 'stats'] },
+    { label: 'Fees & Payments', route: '/fees', icon: 'payments', group: 'Pages', description: 'Resident fees, charges, payments & receipts', keywords: ['fees', 'rent', 'payments', 'receipts', 'invoice', 'charges', 'dues', 'collection', 'refund'] },
+    { label: 'Residents', route: '/residents', icon: 'groups', group: 'Pages', description: 'Resident list, allocation, invites & check-outs', keywords: ['residents', 'tenants', 'students', 'check out', 'invite', 'allocate'] },
+    { label: 'Rooms & Beds', route: '/rooms', icon: 'meeting_room', group: 'Pages', description: 'Manage rooms, bed allocation & occupancy', keywords: ['rooms', 'beds', 'floors', 'occupancy', 'tenants', 'sharing'] },
     { label: 'Onboard Hostel', route: '/hostel-onboarding', icon: 'apartment', group: 'Pages', description: 'All onboarded hostels', keywords: ['hostels', 'institution', 'property'] },
     { label: 'Subscription Plans', route: '/subscription-plans', icon: 'credit_card', group: 'Pages', description: 'Pricing plans and features', keywords: ['pricing', 'plans', 'features'] },
     { label: 'Communication Templates', route: '/communication-templates', icon: 'campaign', group: 'Pages', description: 'Email, SMS and push messages', keywords: ['email', 'sms', 'push', 'notification', 'message'] },

@@ -5,6 +5,7 @@ export type AuditModule =
   | 'Tenant'
   | 'Subscription Plan'
   | 'Subscription & Payment'
+  | 'Fees & Payments'
   | 'Communication Template'
   | 'System Defaults';
 
@@ -37,6 +38,26 @@ export const AUDIT_EVENTS = {
   'Create Template': { module: 'Communication Template', action: 'Create' },
   'Update Template': { module: 'Communication Template', action: 'Update' },
   'Change Settings': { module: 'System Defaults', action: 'Update' },
+  'Create Resident': { module: 'Tenant', action: 'Create' },
+  'Update Resident': { module: 'Tenant', action: 'Update' },
+  'Invite Resident': { module: 'Tenant', action: 'Send Invite' },
+  'Allocate Resident': { module: 'Tenant', action: 'Allocate Bed' },
+  'Transfer Resident': { module: 'Tenant', action: 'Transfer Bed' },
+  'Check Out Resident': { module: 'Tenant', action: 'Check Out' },
+  'Create Fee': { module: 'Fees & Payments', action: 'Create Fee' },
+  'Update Fee': { module: 'Fees & Payments', action: 'Update Fee' },
+  'Generate Charges': { module: 'Fees & Payments', action: 'Generate Charges' },
+  'Create Charge': { module: 'Fees & Payments', action: 'Create Charge' },
+  'Cancel Charge': { module: 'Fees & Payments', action: 'Cancel Charge' },
+  'Collect Payment': { module: 'Fees & Payments', action: 'Record Payment' },
+  'Confirm Payment': { module: 'Fees & Payments', action: 'Confirm Payment' },
+  'Reverse Payment': { module: 'Fees & Payments', action: 'Reverse' },
+  'Refund Payment': { module: 'Fees & Payments', action: 'Refund' },
+  'Send Reminder': { module: 'Fees & Payments', action: 'Send Reminder' },
+  'Create Room': { module: 'Hostel', action: 'Create' },
+  'Update Room': { module: 'Hostel', action: 'Update' },
+  'Delete Room': { module: 'Hostel', action: 'Delete' },
+  'Update Bed': { module: 'Hostel', action: 'Update' },
 } as const satisfies Record<string, { module: AuditModule; action: string }>;
 
 export type AuditEvent = keyof typeof AUDIT_EVENTS;
@@ -50,6 +71,7 @@ export const AUDIT_MODULES: AuditModule[] = [
   'Tenant',
   'Subscription Plan',
   'Subscription & Payment',
+  'Fees & Payments',
   'Communication Template',
   'System Defaults',
 ];

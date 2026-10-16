@@ -1,0 +1,145 @@
+@let r = resident;
+@let alloc = allocation;
+<div class="rv">
+  <header class="rv__header">
+    <div class="rv__identity">
+      <span class="rv__avatar">
+        @if (r.photoUrl) {
+          <img [src]="r.photoUrl" [alt]="name" />
+        } @else {
+          {{ initials }}
+        }
+      </span>
+      <div>
+        <h2>{{ name }}</h2>
+        <p>
+          <span class="rv__id">{{ r.residentId }}</span>
+          <span class="res-status" [ngClass]="'res-status--' + statusKey(r.status)">{{ r.status }}</span>
+          @if (r.deactivatedAt) {
+            <span class="res-status res-status--deactivated">Deactivated</span>
+          }
+        </p>
+      </div>
+    </div>
+    <button mat-icon-button type="button" (click)="close()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  @if (r.deactivatedAt) {
+    <div class="rv__actions">
+      <button mat-stroked-button type="button" (click)="run('reactivate')"><mat-icon>person</mat-icon>Reactivate</button>
+    </div>
+  } @else {
+    <div class="rv__actions">
+      <button mat-stroked-button type="button" (click)="run('edit')"><mat-icon>edit</mat-icon>Edit</button>
+      @if (canHoldBed) {
+        @if (alloc) {
+          <button mat-stroked-button type="button" (click)="run('transfer')"><mat-icon>swap_horiz</mat-icon>Transfer bed</button>
+        } @else {
+          <button mat-stroked-button type="button" (click)="run('allocate')"><mat-icon>bed</mat-icon>Allocate bed</button>
+        }
+      }
+      @if (r.status === 'Invited') {
+        <button mat-stroked-button type="button" (click)="run('invite')"><mat-icon>send</mat-icon>{{ r.inviteSentAt ? 'Resend invite' : 'Send invite' }}</button>
+      }
+      @if (r.status !== 'Checked Out') {
+        <button mat-stroked-button type="button" class="rv__danger" (click)="run('checkout')"><mat-icon>logout</mat-icon>Check out</button>
+      }
+      <button mat-stroked-button type="button" class="rv__danger" (click)="run('deactivate')"><mat-icon>person_off</mat-icon>Deactivate</button>
+    </div>
+  }
+
+  <mat-dialog-content class="rv__content">
+    <mat-tab-group animationDuration="0ms" mat-stretch-tabs="false" mat-align-tabs="start">
+      <mat-tab label="Profile">
+        <div class="rv__summary">
+          <div class="rv__tile">
+            <span class="rv__tile-label">Room / Bed</span>
+            <strong>{{ alloc ? 'Room ' + alloc.room.roomNumber + ' · Bed ' + alloc.bed.bedNumber : 'Not allocated' }}</strong>
+            <span>{{ alloc ? alloc.room.building + ' · ' + alloc.room.floor : (r.status === 'Checked Out' ? 'Checked out ' + fmt.date(r.checkOutDate) : '—') }}</span>
+          </div>
+          <div class="rv__tile">
+            <span class="rv__tile-label">Joining date</span>
+            <strong>{{ fmt.date(r.joiningDate) }}</strong>
+            <span>{{ r.expectedCheckoutDate ? 'Until ' + fmt.date(r.expectedCheckoutDate) : 'No end date' }}</span>
+          </div>
+          @if (data.canViewBalance) {
+            <div class="rv__tile" [class.rv__tile--due]="r.outstandingBalance > 0">
+              <span class="rv__tile-label">Outstanding</span>
+              <strong>₹{{ r.outstandingBalance | number }}</strong>
+              <span>{{ r.outstandingBalance > 0 ? 'Unpaid charges' : 'All settled' }}</span>
+            </div>
+          }
+        </div>
+
+        <h3 class="rv__heading">Contact</h3>
+        <dl class="rv__dl">
+          <dt>Mobile</dt><dd>{{ formatMobile(r.mobileCode, r.mobile) }}</dd>
+          <dt>Email</dt><dd>{{ r.email || '—' }}</dd>
+          <dt>Address</dt><dd>{{ r.permanentAddress || '—' }}</dd>
+          <dt>Emergency</dt>
+          <dd>
+            {{ r.emergencyContactName || '—' }}
+            @if (r.emergencyContactMobile) { · {{ formatMobile('+91', r.emergencyContactMobile) }} }
+          </dd>
+        </dl>
+
+        <h3 class="rv__heading">Stay</h3>
+        <dl class="rv__dl">
+          <dt>Resident type</dt><dd>{{ r.residentType }}</dd>
+          <dt>College / company</dt><dd>{{ r.collegeOrCompany || '—' }}</dd>
+          <dt>Gender</dt><dd>{{ r.gender }}</dd>
+          <dt>Date of birth</dt><dd>{{ r.dateOfBirth ? fmt.date(r.dateOfBirth) : '—' }}</dd>
+          @if (r.status === 'Invited') {
+            <dt>Invite</dt><dd>{{ r.inviteSentAt ? 'Sent ' + fmt.date(r.inviteSentAt, 'datetime') : 'Not sent yet' }}</dd>
+          }
+        </dl>
+
+        @if (r.guardian) {
+          <h3 class="rv__heading">Parent / guardian</h3>
+          <dl class="rv__dl">
+            <dt>Name</dt><dd>{{ r.guardian.name }} ({{ r.guardian.relationship || '—' }})</dd>
+            <dt>Mobile</dt><dd>{{ r.guardian.mobile ? formatMobile('+91', r.guardian.mobile) : '—' }}</dd>
+            <dt>Consent</dt><dd>{{ r.guardian.consent ? 'Given' : 'Not recorded' }}</dd>
+          </dl>
+        }
+
+        <h3 class="rv__heading">Documents</h3>
+        @if (r.documents.length) {
+          <ul class="rv__docs">
+            @for (d of r.documents; track d.id) {
+              <li>
+                <mat-icon fontSet="material-icons-outlined">description</mat-icon>
+                <span class="rv__doc-name">{{ d.type }} <small>{{ d.fileName }}</small></span>
+                <span class="doc-status" [ngClass]="'doc-status--' + statusKey(d.status)">{{ d.status }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="rv__empty">No documents uploaded.</p>
+        }
+
+        @if (r.notes) {
+          <h3 class="rv__heading">Notes</h3>
+          <p class="rv__notes">{{ r.notes }}</p>
+        }
+      </mat-tab>
+
+      <mat-tab [label]="'Activity (' + r.activity.length + ')'">
+        <ol class="rv__timeline">
+          @for (a of r.activity; track $index) {
+            <li>
+              <span class="rv__dot"><mat-icon fontSet="material-icons-outlined">{{ a.icon }}</mat-icon></span>
+              <div>
+                <strong>{{ a.action }}</strong>
+                @if (a.details) { <span class="rv__detail">{{ a.details }}</span> }
+                <time>{{ fmt.date(a.at, 'datetime') }}</time>
+              </div>
+            </li>
+          }
+        </ol>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-dialog-content>
+</div>

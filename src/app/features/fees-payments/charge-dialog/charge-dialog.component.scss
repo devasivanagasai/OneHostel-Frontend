@@ -1,0 +1,15 @@
+@use '../../../../styles/dialog-kit' as *;
+.cd { @include dialog-shell(560px); }
+.cd__header { @include dialog-header; }
+.cd__title { @include dialog-title; }
+.cd__content { @include dialog-content; }
+.cd__footer { @include dialog-footer; }
+.cd__full { width: 100%; }
+.cd__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px 12px;
+  mat-form-field { width: 100%; }
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+.cd__info { @include info-box; }

@@ -209,8 +209,22 @@ export class AuthService {
     return !roles?.length || roles.includes('Admin');
   }
 
+  get isHostelOwner(): boolean {
+    const roles = this.currentUser?.roles;
+    return !!roles && (roles.includes('HostelOwner') || roles.includes('Hostel Owner'));
+  }
+
+  get isTenant(): boolean {
+    const roles = this.currentUser?.roles;
+    return !!roles && roles.includes('Tenant');
+  }
+
   /** Whether the signed-in user may open this route (the Admin modules are Admin-only). */
   canAccess(route: string): boolean {
+    // Hostel-owner-only routes (rooms, residents, fees) are closed to Tenants
+    if (['/rooms', '/residents', '/fees'].some((r) => route.startsWith(r)) && this.isTenant) {
+      return false;
+    }
     return this.isAdmin || !ADMIN_ONLY_ROUTES.some((r) => route === r || route.startsWith(r + '/'));
   }
 

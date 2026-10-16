@@ -1,0 +1,92 @@
+@use '../../../../styles/dialog-kit' as *;
+
+.rb {
+  @include dialog-shell(520px);
+}
+
+.rb__header {
+  @include dialog-header;
+}
+
+.rb__title {
+  @include dialog-title;
+
+  > span.rb__icon--warn {
+    background: #fff1f2;
+    color: #e11d48;
+  }
+}
+
+.rb__content {
+  @include dialog-content;
+}
+
+.rb__footer {
+  @include dialog-footer;
+}
+
+.rb__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 14px;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rb__full {
+  width: 100%;
+}
+
+.rb__current {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid #e8edf3;
+  border-radius: 12px;
+
+  strong {
+    font-size: 15px;
+    color: #0f172a;
+  }
+}
+
+.rb__current-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.rb__current-sub {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.rb__info {
+  @include info-box;
+  margin-bottom: 14px;
+}
+
+.rb__warn {
+  @include info-box;
+  margin-bottom: 14px;
+  background: #fff7ed;
+  color: #9a3412;
+
+  mat-icon {
+    color: #ea580c;
+  }
+}
+
+.rb__error {
+  color: #dc2626;
+}
